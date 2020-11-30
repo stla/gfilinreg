@@ -56,7 +56,8 @@ gfilinreg <- function(
   # centers of hypercubes (volume 1/L^p)
   centers <- as.matrix(
     do.call(
-      CJ, rep(list(seq(0, 1, length.out = L+1L)[-1L] - 1/(2*L)), q)
+      function(...){CJ(..., sorted = FALSE)}, 
+      rep(list(seq(0, 1, length.out = L+1L)[-1L] - 1/(2*L)), q)
     )
   )
   # select indices

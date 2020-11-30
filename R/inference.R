@@ -99,7 +99,7 @@ gfiCDF <- function(parameter, fidsamples){
 #' gfi <- gfilinreg(y ~ 0 + group, distr = "logistic", data = dat, L = 30L)
 #' gfiConfInt(~ group1 - group2, gfi)
 gfiConfInt <- function(parameter, fidsamples, conf = 0.95){
-  fcdf <- fiCDF(parameter, fidsamples)
+  fcdf <- gfiCDF(parameter, fidsamples)
   alpha <- 1 - conf
   quantile.ewcdf(fcdf, c(alpha/2, 1-alpha/2))
 }
