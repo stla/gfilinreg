@@ -27,7 +27,7 @@
 #' @importFrom EigenR Eigen_rank
 #' @importFrom stats model.matrix as.formula
 #' @importFrom lazyeval f_eval_lhs f_rhs
-#' @importFrom data.table CJ as.data.table
+#' @importFrom data.table CJ as.data.table uniqueN
 #' @export
 gfilinreg <- function(
   formula, data = NULL, distr = "student", df = Inf, L = 30L
@@ -72,7 +72,7 @@ gfilinreg <- function(
   if(Eigen_rank(cbind(XI, 1)) < q){
     # remove centers having equal coordinates (H'H is not invertible)
     centers <-
-      centers[apply(centers, 1L, function(row) length(unique(row)) > 1L),]
+      centers[apply(centers, 1L, function(row) uniqueN(row) > 1L),]
     M <- (L^q - L) / 2L # number of centers yielding sigma>0
   }else{
     M <- floor(L^q / 2L) # TODO: test !!! - done, seems OK
