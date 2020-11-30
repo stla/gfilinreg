@@ -168,15 +168,19 @@ Rcpp::List f_logistic(const Eigen::MatrixXd& centers,
     Eigen::MatrixXd H(q, q);
     H << XI, qlogistic(centers.col(m));
     Eigen::MatrixXd Ht = H.transpose();
-    Eigen::VectorXd theta = (Ht * H).inverse() * Ht * yI;
-    double sigma = theta.coeff(q - 1);
-    if(sigma > 0) {
-      Eigen::VectorXd v = ymI - XmI * theta.topRows(q - 1);
-      J(counter) = logdlogistic(v / sigma) - (n - q) * log(sigma);
-      Theta.col(counter) = theta;
-      counter++;
+    const Eigen::FullPivLU<Eigen::MatrixXd> lu(Ht * H);
+    if(lu.isInvertible()) {
+      Eigen::VectorXd theta = lu.inverse() * Ht * yI;
+      double sigma = theta.coeff(q - 1);
+      if(sigma > 0) {
+        Eigen::VectorXd v = ymI - XmI * theta.topRows(q - 1);
+        J(counter) = logdlogistic(v / sigma) - (n - q) * log(sigma);
+        Theta.col(counter) = theta;
+        counter++;
+      }
     }
   }
-  return Rcpp::List::create(Rcpp::Named("Theta") = Theta.transpose(),
-                            Rcpp::Named("logWeights") = J);
+  return Rcpp::List::create(
+      Rcpp::Named("Theta") = Theta.leftCols(counter).transpose(),
+      Rcpp::Named("logWeights") = J.topRows(counter));
 }
