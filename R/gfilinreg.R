@@ -13,9 +13,6 @@
 #'   \code{distr = "student"}
 #' @param L number of subdivisions of each axis of the hypercube
 #'   \code{(0,1)^(p+1)}
-#' @param lucky logical, whether to perform the matrix inversions in the
-#'   algorithm without checking invertibility; it is possible that some of
-#'   these matrices are not invertible, if you are unlucky
 #'
 #' @return A \code{gfilinreg} object, list with the fiducial samples and the
 #'   weights.
@@ -33,7 +30,7 @@
 #' @importFrom data.table CJ as.data.table
 #' @export
 gfilinreg <- function(
-  formula, data = NULL, distr = "student", df = Inf, L = 10L, lucky = TRUE
+  formula, data = NULL, distr = "student", df = Inf, L = 30L
 ){
   distr <- match.arg(distr, c("normal", "student", "cauchy", "logistic"))
   if(distr == "student"){
@@ -80,39 +77,35 @@ gfilinreg <- function(
   }else{
     M <- floor(L^q / 2L) # TODO: test !!! - done, seems OK
   }
-  if(lucky){
-    if(distr == "normal"){
-      cpp <- f_normal(
-        centers = t(centers),
-        XI = XI, XmI = XmI,
-        yI = yI, ymI = ymI,
-        M = M, n = n
-      )
-    }else if(distr == "student"){
-      cpp <- f_student(
-        centers = t(centers),
-        XI = XI, XmI = XmI,
-        yI = yI, ymI = ymI,
-        M = M, n = n,
-        nu = df
-      )
-    }else if(distr == "cauchy"){
-      cpp <- f_cauchy(
-        centers = t(centers),
-        XI = XI, XmI = XmI,
-        yI = yI, ymI = ymI,
-        M = M, n = n
-      )
-    }else if(distr == "logistic"){
-      cpp <- f_logistic(
-        centers = t(centers),
-        XI = XI, XmI = XmI,
-        yI = yI, ymI = ymI,
-        M = M, n = n
-      )
-    }
-  }else{
-    # xxx
+  if(distr == "normal"){
+    cpp <- f_normal(
+      centers = t(centers),
+      XI = XI, XmI = XmI,
+      yI = yI, ymI = ymI,
+      M = M, n = n
+    )
+  }else if(distr == "student"){
+    cpp <- f_student(
+      centers = t(centers),
+      XI = XI, XmI = XmI,
+      yI = yI, ymI = ymI,
+      M = M, n = n,
+      nu = df
+    )
+  }else if(distr == "cauchy"){
+    cpp <- f_cauchy(
+      centers = t(centers),
+      XI = XI, XmI = XmI,
+      yI = yI, ymI = ymI,
+      M = M, n = n
+    )
+  }else if(distr == "logistic"){
+    cpp <- f_logistic(
+      centers = t(centers),
+      XI = XI, XmI = XmI,
+      yI = yI, ymI = ymI,
+      M = M, n = n
+    )
   }
   J <- exp(cpp[["logWeights"]])
   out <- list(
