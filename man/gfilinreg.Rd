@@ -4,14 +4,7 @@
 \alias{gfilinreg}
 \title{Fiducial sampler for linear regression model}
 \usage{
-gfilinreg(
-  formula,
-  data = NULL,
-  distr = "student",
-  df = Inf,
-  L = 10L,
-  lucky = TRUE
-)
+gfilinreg(formula, data = NULL, distr = "student", df = Inf, L = 30L)
 }
 \arguments{
 \item{formula}{two-sided formula defining the model}
@@ -26,10 +19,6 @@ gfilinreg(
 
 \item{L}{number of subdivisions of each axis of the hypercube
 \code{(0,1)^(p+1)}}
-
-\item{lucky}{logical, whether to perform the matrix inversions in the
-algorithm without checking invertibility; it is possible that some of
-these matrices are not invertible, if you are unlucky}
 }
 \value{
 A \code{gfilinreg} object, list with the fiducial samples and the
