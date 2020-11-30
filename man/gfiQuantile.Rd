@@ -7,18 +7,25 @@
 gfiQuantile(parameter, fidsamples, probs)
 }
 \arguments{
-\item{parameter}{xx}
+\item{parameter}{a right-sided formula defining the parameter of interest}
 
-\item{fidsamples}{xx}
+\item{fidsamples}{fiducial samples, the output of \code{\link{gfilinreg}} or 
+\code{\link{gfilinregPredictive}}}
 
-\item{probs}{xx}
+\item{probs}{numeric vector of probabilities}
 }
 \value{
-xx
+Numeric vector of quantiles, of the same length as \code{probs}.
 }
 \description{
 Title
 }
 \examples{
-xx
+set.seed(666L)
+dat <- data.frame(
+  group = gl(2, 15), 
+  y = c(2*rlogis(15L), 10 + 2*rlogis(15L))
+)
+gfi <- gfilinreg(y ~ 0 + group, distr = "logistic", data = dat, L = 30L)
+gfiQuantile(~ group1 - group2, gfi, c(25, 50, 75)/100)
 }

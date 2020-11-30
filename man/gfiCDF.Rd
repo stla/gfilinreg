@@ -2,21 +2,31 @@
 % Please edit documentation in R/inference.R
 \name{gfiCDF}
 \alias{gfiCDF}
-\title{Title}
+\title{Fiducial cumulative distribution function}
 \usage{
 gfiCDF(parameter, fidsamples)
 }
 \arguments{
-\item{parameter}{xx}
+\item{parameter}{a right-sided formula defining the parameter of interest}
 
-\item{fidsamples}{xx}
+\item{fidsamples}{fiducial samples, the output of \code{\link{gfilinreg}} or 
+\code{\link{gfilinregPredictive}}}
 }
 \value{
-xx
+The fiducial cumulative distribution function of the parameter.
 }
 \description{
-Title
+Fiducial cumulative distribution function of a parameter of 
+  interest.
 }
 \examples{
-xx
+set.seed(666L)
+dat <- data.frame(
+  group = gl(2, 15), 
+  y = c(2*rlogis(15L), 10 + 2*rlogis(15L))
+)
+gfi <- gfilinreg(y ~ 0 + group, distr = "logistic", data = dat, L = 30L)
+fcdf <- gfiCDF(~ group1 - group2, gfi)
+fcdf(0)
+plot(fcdf)
 }

@@ -2,23 +2,30 @@
 % Please edit documentation in R/inference.R
 \name{gfiConfInt}
 \alias{gfiConfInt}
-\title{Title}
+\title{Fiducial confidence interval}
 \usage{
 gfiConfInt(parameter, fidsamples, conf = 0.95)
 }
 \arguments{
-\item{parameter}{xx}
+\item{parameter}{a right-sided formula defining the parameter of interest}
 
-\item{fidsamples}{xx}
+\item{fidsamples}{fiducial samples, the output of \code{\link{gfilinreg}} or 
+\code{\link{gfilinregPredictive}}}
 
-\item{conf}{xx}
+\item{conf}{confidence level}
 }
 \value{
-xx
+The fiducial confidence interval of the parameter.
 }
 \description{
-Title
+Fiducial confidence interval of a parameter of interest.
 }
 \examples{
-xx
+set.seed(666L)
+dat <- data.frame(
+  group = gl(2, 15), 
+  y = c(2*rlogis(15L), 10 + 2*rlogis(15L))
+)
+gfi <- gfilinreg(y ~ 0 + group, distr = "logistic", data = dat, L = 30L)
+gfiConfInt(~ group1 - group2, gfi)
 }

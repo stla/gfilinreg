@@ -2,21 +2,29 @@
 % Please edit documentation in R/inference.R
 \name{gfiSummary}
 \alias{gfiSummary}
-\title{Title}
+\title{Summary of fiducial samples}
 \usage{
 gfiSummary(fidsamples, conf = 0.95)
 }
 \arguments{
-\item{fidsamples}{xx}
+\item{fidsamples}{fiducial samples, the output of \code{\link{gfilinreg}} or 
+\code{\link{gfilinregPredictive}}}
 
 \item{conf}{confidence level}
 }
 \value{
-xx
+A matrix with summary statistics: means, medians, and confidence 
+  intervals.
 }
 \description{
-Title
+Summary of the fiducial samples.
 }
 \examples{
-xx
+set.seed(666L)
+dat <- data.frame(
+  group = gl(2, 15), 
+  y = c(2*rlogis(15L), 10 + 2*rlogis(15L))
+)
+gfi <- gfilinreg(y ~ 0 + group, distr = "logistic", data = dat, L = 30L)
+gfiSummary(gfi)
 }

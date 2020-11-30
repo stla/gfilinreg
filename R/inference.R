@@ -18,15 +18,24 @@ inference <- function(fidsamples, param, alpha = 0.05){
   out
 }
 
-#' Title
+#' Summary of fiducial samples
+#' @description Summary of the fiducial samples.
 #'
-#' @param fidsamples xx
+#' @param fidsamples fiducial samples, the output of \code{\link{gfilinreg}} or 
+#'   \code{\link{gfilinregPredictive}}
 #' @param conf confidence level
 #'
-#' @return xx
+#' @return A matrix with summary statistics: means, medians, and confidence 
+#'   intervals.
 #' @export
 #'
-#' @examples xx
+#' @examples set.seed(666L)
+#' dat <- data.frame(
+#'   group = gl(2, 15), 
+#'   y = c(2*rlogis(15L), 10 + 2*rlogis(15L))
+#' )
+#' gfi <- gfilinreg(y ~ 0 + group, distr = "logistic", data = dat, L = 30L)
+#' gfiSummary(gfi)
 gfiSummary <- function(fidsamples, conf = 0.95){
   sims <- if(inherits(fidsamples, "gfilinreg.pred")){
     fidsamples[["FPD"]]
@@ -39,18 +48,29 @@ gfiSummary <- function(fidsamples, conf = 0.95){
   out
 }
 
-#' Title
+#' Fiducial cumulative distribution function
+#' @description Fiducial cumulative distribution function of a parameter of 
+#'   interest.
 #'
-#' @param parameter xx
-#' @param fidsamples xx
+#' @param parameter a right-sided formula defining the parameter of interest 
+#' @param fidsamples fiducial samples, the output of \code{\link{gfilinreg}} or 
+#'   \code{\link{gfilinregPredictive}}
 #'
-#' @return xx
+#' @return The fiducial cumulative distribution function of the parameter.
 #'
 #' @importFrom lazyeval f_eval_rhs
 #' @importFrom spatstat ewcdf
 #' @export
 #'
-#' @examples xx
+#' @examples set.seed(666L)
+#' dat <- data.frame(
+#'   group = gl(2, 15), 
+#'   y = c(2*rlogis(15L), 10 + 2*rlogis(15L))
+#' )
+#' gfi <- gfilinreg(y ~ 0 + group, distr = "logistic", data = dat, L = 30L)
+#' fcdf <- gfiCDF(~ group1 - group2, gfi)
+#' fcdf(0)
+#' plot(fcdf)
 gfiCDF <- function(parameter, fidsamples){
   dataName <- ifelse(inherits(fidsamples, "gfilinreg.pred"), "FPD", "Theta")
   data <- fidsamples[[dataName]]
@@ -58,18 +78,26 @@ gfiCDF <- function(parameter, fidsamples){
   ewcdf(fsims, weights = fidsamples[["weight"]])
 }
 
-#' Title
+#' Fiducial confidence interval
+#' @description Fiducial confidence interval of a parameter of interest.
 #'
-#' @param parameter xx
-#' @param fidsamples xx
-#' @param conf xx
+#' @param parameter a right-sided formula defining the parameter of interest 
+#' @param fidsamples fiducial samples, the output of \code{\link{gfilinreg}} or 
+#'   \code{\link{gfilinregPredictive}}
+#' @param conf confidence level
 #'
-#' @return xx
+#' @return The fiducial confidence interval of the parameter.
 #'
 #' @importFrom spatstat quantile.ewcdf
 #' @export
 #'
-#' @examples xx
+#' @examples set.seed(666L)
+#' dat <- data.frame(
+#'   group = gl(2, 15), 
+#'   y = c(2*rlogis(15L), 10 + 2*rlogis(15L))
+#' )
+#' gfi <- gfilinreg(y ~ 0 + group, distr = "logistic", data = dat, L = 30L)
+#' gfiConfInt(~ group1 - group2, gfi)
 gfiConfInt <- function(parameter, fidsamples, conf = 0.95){
   fcdf <- fiCDF(parameter, fidsamples)
   alpha <- 1 - conf
@@ -78,18 +106,24 @@ gfiConfInt <- function(parameter, fidsamples, conf = 0.95){
 
 #' Title
 #'
-#' @param parameter xx
-#' @param fidsamples xx
-#' @param probs xx
+#' @param parameter a right-sided formula defining the parameter of interest 
+#' @param fidsamples fiducial samples, the output of \code{\link{gfilinreg}} or 
+#'   \code{\link{gfilinregPredictive}}
+#' @param probs numeric vector of probabilities
 #'
-#' @return xx
+#' @return Numeric vector of quantiles, of the same length as \code{probs}.
 #'
 #' @importFrom spatstat quantile.ewcdf
 #' @export
 #'
-#' @examples xx
+#' @examples set.seed(666L)
+#' dat <- data.frame(
+#'   group = gl(2, 15), 
+#'   y = c(2*rlogis(15L), 10 + 2*rlogis(15L))
+#' )
+#' gfi <- gfilinreg(y ~ 0 + group, distr = "logistic", data = dat, L = 30L)
+#' gfiQuantile(~ group1 - group2, gfi, c(25, 50, 75)/100)
 gfiQuantile <- function(parameter, fidsamples, probs){
   fcdf <- gfiCDF(parameter, fidsamples)
   quantile.ewcdf(fcdf, probs = probs)
 }
-
