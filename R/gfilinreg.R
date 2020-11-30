@@ -20,7 +20,7 @@
 #' @return A \code{gfilinreg} object, list with the fiducial samples and the
 #'   weights.
 #'
-#' @examples set.seed(666)
+#' @examples set.seed(666L)
 #' x <- c(1, 2, 3, 4)
 #' y <- x + 3 * rcauchy(4L)
 #' gfi <- gfilinreg(y ~ x, distr = "cauchy", L = 30L)

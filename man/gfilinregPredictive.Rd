@@ -7,16 +7,24 @@
 gfilinregPredictive(fidsamples, newdata)
 }
 \arguments{
-\item{fidsamples}{xx}
+\item{fidsamples}{fiducial samples, the output of \code{\link{gfilinreg}}}
 
-\item{newdata}{xx}
+\item{newdata}{dataframe in which to look for variables with which to 
+predict, or \code{NULL} if the model is intercept-only}
 }
 \value{
-xx
+A list with two fields: \code{FPD}, a dataframe containing the 
+  simulations, and \code{weight}, their weight. This is a 
+  \code{gfilinreg} object.
 }
 \description{
 Title
 }
 \examples{
-xx
+set.seed(666L)
+x <- c(1, 2, 3, 4)
+y <- x + 3 * rcauchy(4L)
+gf <- gfilinreg(y ~ x, distr = "cauchy", L = 30L)
+gfpred <- gfilinregPredictive(gf, data.frame(x = c(4, 5)))
+gfiSummary(gfpred)
 }

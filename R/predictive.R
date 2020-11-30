@@ -1,14 +1,22 @@
 #' Title
 #'
-#' @param fidsamples xx
-#' @param newdata xx
+#' @param fidsamples fiducial samples, the output of \code{\link{gfilinreg}}
+#' @param newdata dataframe in which to look for variables with which to 
+#'   predict, or \code{NULL} if the model is intercept-only
 #'
-#' @return xx
+#' @return A list with two fields: \code{FPD}, a dataframe containing the 
+#'   simulations, and \code{weight}, their weight. This is a 
+#'   \code{gfilinreg} object.
 #'
 #' @importFrom stats model.matrix rt rlogis rcauchy rnorm
 #' @export
 #'
-#' @examples xx
+#' @examples set.seed(666L)
+#' x <- c(1, 2, 3, 4)
+#' y <- x + 3 * rcauchy(4L)
+#' gf <- gfilinreg(y ~ x, distr = "cauchy", L = 30L)
+#' gfpred <- gfilinregPredictive(gf, data.frame(x = c(4, 5)))
+#' gfiSummary(gfpred)
 gfilinregPredictive <- function(fidsamples, newdata){
   if(is.null(newdata) || missing(newdata)){
     newdata <- as.data.frame(matrix(nrow = 1L, ncol = 0L))
