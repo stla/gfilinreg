@@ -55,7 +55,7 @@ Eigen::VectorXd qlogistic(const Eigen::VectorXd& p) {
 double logdlogistic(const Eigen::VectorXd& x) {
   Eigen::VectorXd out(x.size());
   for(auto i = 0; i < x.size(); i++) {
-    out(i) = -x.coeff(i) - 2 * log1p(exp(-x.coeff(i)));
+    out(i) = -x.coeff(i) - 2.0 * log1p(exp(-x.coeff(i)));
   }
   return out.sum();
 }

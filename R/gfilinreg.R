@@ -30,6 +30,7 @@
 #' @importFrom EigenR Eigen_rank
 #' @importFrom stats model.matrix as.formula
 #' @importFrom lazyeval f_eval_lhs f_rhs
+#' @importFrom data.table CJ as.data.table
 #' @export
 gfilinreg <- function(
   formula, data = NULL, distr = "student", df = Inf, L = 10L, lucky = TRUE
@@ -55,7 +56,7 @@ gfilinreg <- function(
   # centers of hypercubes (volume 1/L^p)
   centers <- as.matrix(
     do.call(
-      expand.grid, rep(list(seq(0, 1, length.out = L+1L)[-1L] - 1/(2*L)), q)
+      CJ, rep(list(seq(0, 1, length.out = L+1L)[-1L] - 1/(2*L)), q)
     )
   )
   # select indices
@@ -114,7 +115,7 @@ gfilinreg <- function(
   }
   J <- exp(cpp[["logWeights"]])
   out <- list(
-    Theta = as.data.frame(`colnames<-`(cpp[["Theta"]], c(betas, "sigma"))),
+    Theta = as.data.table(`colnames<-`(cpp[["Theta"]], c(betas, "sigma"))),
     weight = J/sum(J)
   )
   attr(out, "distr") <- distr
