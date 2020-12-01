@@ -60,9 +60,9 @@ gfilinreg <- function(
   if(stopifbig && (q * L^q > 1.1e7)){
     stop(
       paste0(
+        "The algorithm needs to deal with two big matrices ",
         sprintf(
-          "The algorithm needs to deal with two big matrices (%g entries). ", 
-          q * L^q
+          "(%g entries: %g GB). ", q * L^q, q * L^q * 8e-9
         ), 
         "Set the option `stopifbig` to FALSE if you want to proceed anyway."
       )
