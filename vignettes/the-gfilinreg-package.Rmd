@@ -138,9 +138,10 @@ kfit_fid_mean   <- kde1d(group1_fid_mean, mult = 4)
 kfit_fid_median <- kde1d(group1_fid_median, mult = 4)
 
 curve(
-  dkde1d(x, kfit_maxlhd), from = -4, to = 4, 
-  lwd = 2, col = "red", lty = "dashed"
+  dkde1d(x, kfit_maxlhd), from = -4, to = 4, axes = FALSE,
+  lwd = 2, col = "red", lty = "dashed", xlab = "beta1", ylab = NA
 )
+axis(1)
 curve(
   dkde1d(x, kfit_fid_mean), add = TRUE, 
   lwd = 2, col = "green", lty = "dashed"
@@ -166,9 +167,10 @@ kfit_fid_mean   <- kde1d(group2_fid_mean, mult = 4)
 kfit_fid_median <- kde1d(group2_fid_median, mult = 4)
 
 curve(
-  dkde1d(x, kfit_maxlhd), from = -2, to = 8, 
-  lwd = 2, col = "red", lty = "dashed"
+  dkde1d(x, kfit_maxlhd), from = -2, to = 8, axes = FALSE,
+  lwd = 2, col = "red", lty = "dashed", xlab = "beta2", ylab = NA
 )
+axis(1)
 curve(
   dkde1d(x, kfit_fid_mean), add = TRUE, 
   lwd = 2, col = "green", lty = "dashed"
@@ -193,9 +195,10 @@ kfit_fid_mean   <- kde1d(sigma_fid_mean, xmin = 0, mult = 4)
 kfit_fid_median <- kde1d(sigma_fid_median, xmin = 0, mult = 4)
 
 curve(
-  dkde1d(x, kfit_maxlhd), from = 0, to = 4, 
-  lwd = 2, col = "red"
+  dkde1d(x, kfit_maxlhd), from = 0, to = 4, axes = FALSE,
+  lwd = 2, col = "red", xlab = "sigma", ylab = NA
 )
+axis(1)
 abline(v = median(sigma_maxlhd), col = "red", lwd = 2, lty = "dashed")
 curve(
   dkde1d(x, kfit_fid_mean), add = TRUE, 
