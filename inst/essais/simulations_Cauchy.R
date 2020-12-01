@@ -2,33 +2,34 @@ library(gfilinreg)
 library(heavy)
 library(data.table)
 
-set.seed(666L)
 nsims <- 500L
-
-MLD <- matrix(NA_real_, nrow = nsims, ncol = 3L)
-colnames(MLD) <- c("group1", "group2", "sigma")
+MAXLHD <- matrix(NA_real_, nrow = nsims, ncol = 3L)
+colnames(MAXLHD) <- c("group1", "group2", "sigma")
 FIDlist <- vector("list", length = nsims)
 
+group <- gl(2L, 6L)
+set.seed(666L)
 for(i in 1L:nsims){
   cat(i, " - ")
+  # simulated dataset
   dat <- data.frame(
-    group = gl(2, 6),
-    y = c(rcauchy(6), 2 + rcauchy(6))
+    group = group,
+    y = c(rcauchy(6L), 2 + rcauchy(6L))
   )
-  #
+  # max-likelihood estimates
   hfit <- heavyLm(y ~ 0 + group, data = dat, family = Cauchy())
-  MLD[i, ] <- c(hfit$coefficients, sqrt(hfit$sigma2))
-  #
-  gfi <- gfilinreg(y ~ 0 + group, data = dat, L = 100L, distr = "cauchy")
+  MAXLHD[i, ] <- c(hfit[["coefficients"]], sqrt(hfit[["sigma2"]]))
+  # fiducial stuff
+  fidsamples <- gfilinreg(y ~ 0 + group, data = dat, L = 100L, distr = "cauchy")
   FIDlist[[i]] <- cbind(
-    param = c("group1", "group2", "sigma"), 
-    as.data.table(gfiSummary(gfi))
+    parameter = c("group1", "group2", "sigma"), 
+    as.data.table(gfiSummary(fidsamples))
   )
 }
 
 FID <- rbindlist(FIDlist)
 
-saveRDS(MLD, "~/Work/R/gfilinreg/inst/essais/MLD.rds")
+saveRDS(MAXLHD, "~/Work/R/gfilinreg/inst/essais/MAXLHD.rds")
 saveRDS(FID, "~/Work/R/gfilinreg/inst/essais/FID.rds")
 saveRDS(FIDlist, "~/Work/R/gfilinreg/inst/essais/FIDlist.rds")
 

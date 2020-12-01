@@ -72,6 +72,11 @@ maximum likelihood estimates thanks to the 'heavy' package. We simulate $500$
 datasets.
 
 ```{r simulations, eval=FALSE}
+library(gfilinreg)
+library(heavy)
+library(data.table)
+set.seed(666L)
+nsims <- 500L
 
 ```
 
