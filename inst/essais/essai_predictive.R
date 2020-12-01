@@ -7,7 +7,7 @@ new <- data.frame(x = c(-3,3))
 predict(lm(y ~ x), new, interval = "prediction")
 
 
-gfi <- gfilinreg(y ~ x, L = 100L, distr = "normal", lucky = TRUE)
+gfi <- gfilinreg(y ~ x, L = 100L, distr = "normal")
 
 fpred <- gfilinregPredictive(gfi, new)
 gfiSummary(fpred)
