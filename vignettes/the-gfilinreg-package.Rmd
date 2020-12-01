@@ -124,6 +124,9 @@ data("MAXLHD")
 
 ### Estimates
 
+Our three estimates of the `group1` parameter (maximum likelihood, 
+fiducial mean, fiducial median) have a similar distribution:
+
 ```{r estimate_group1}
 library(kde1d)
 group1_maxlhd     <- MAXLHD[, "group1"]
@@ -148,6 +151,11 @@ curve(
 )
 ```
 
+A simulated dataset has yielded aberrant values of the fiducial mean and the 
+fiducial medians (I do not know why, perhaps a matrix at the edge of 
+non-invertibility has been inversed). After removing it, one observes that the
+distributions of the three estimates of the `group2` parameter are similar:
+
 ```{r estimate_group2}
 group2_maxlhd     <- MAXLHD[, "group2"]
 group2_fid_mean   <- FID[parameter == "group2"][["mean"]][-333L]
@@ -170,6 +178,10 @@ curve(
   lwd = 2, col = "blue", lty = "dashed"
 )
 ```
+
+For the scale parameter `sigma`, there are some differences. The maximum 
+likelihood estimates often underestimate the true value, and the true value is 
+close to the median of the fiducial medians: 
 
 ```{r estimate_group2}
 sigma_maxlhd     <- MAXLHD[, "sigma"]
