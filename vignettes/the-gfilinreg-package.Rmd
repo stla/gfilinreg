@@ -182,18 +182,40 @@ kfit_fid_median <- kde1d(sigma_fid_median, xmin = 0, mult = 4)
 
 curve(
   dkde1d(x, kfit_maxlhd), from = 0, to = 4, 
-  lwd = 2, col = "red", lty = "dashed"
+  lwd = 2, col = "red"
 )
+abline(v = median(sigma_maxlhd), col = "red", lwd = 2, lty = "dashed")
 curve(
   dkde1d(x, kfit_fid_mean), add = TRUE, 
-  lwd = 2, col = "green", lty = "dashed"
+  lwd = 2, col = "green"
 )
+abline(v = median(sigma_fid_mean), col = "green", lwd = 2, lty = "dashed")
 curve(
   dkde1d(x, kfit_fid_median), add = TRUE, 
-  lwd = 2, col = "blue", lty = "dashed"
+  lwd = 2, col = "blue"
 )
-abline(v = 1, col = "maroon", lwd = 2)
+abline(v = median(sigma_fid_median), col = "blue", lwd = 2, lty = "dashed")
+# true value:
+abline(v = 1, col = "yellow", lwd = 3)
 ```
 
 ### Frequentist coverage
+
+```{r coverages}
+# group1
+group1 <- FID[parameter == "group1"]
+mean(group1[["lwr"]] < 0)
+mean(0 < group1[["upr"]])
+mean(group1[["lwr"]] < 0 & 0 < group1[["upr"]])
+# group2
+group2 <- FID[parameter == "group2"]
+mean(group2[["lwr"]] < 2)
+mean(2 < group2[["upr"]])
+mean(group2[["lwr"]] < 2 & 2 < group2[["upr"]])
+# sigma
+sigma <- FID[parameter == "sigma"]
+mean(sigma[["lwr"]] < 1)
+mean(1 < sigma[["upr"]])
+mean(sigma[["lwr"]] < 1 & 1 < sigma[["upr"]])
+```
 
