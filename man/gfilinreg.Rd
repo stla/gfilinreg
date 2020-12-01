@@ -4,7 +4,14 @@
 \alias{gfilinreg}
 \title{Fiducial sampler for linear regression model}
 \usage{
-gfilinreg(formula, data = NULL, distr = "student", df = Inf, L = 30L)
+gfilinreg(
+  formula,
+  data = NULL,
+  distr = "student",
+  df = Inf,
+  L = 30L,
+  stopifbig = TRUE
+)
 }
 \arguments{
 \item{formula}{two-sided formula defining the model}
@@ -19,6 +26,9 @@ gfilinreg(formula, data = NULL, distr = "student", df = Inf, L = 30L)
 
 \item{L}{number of subdivisions of each axis of the hypercube
 \code{(0,1)^(p+1)}}
+
+\item{stopifbig}{logical, whether to stop if the algorithm requires huge 
+matrices}
 }
 \value{
 A \code{gfilinreg} object, list with the fiducial samples and the

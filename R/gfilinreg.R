@@ -13,6 +13,8 @@
 #'   \code{distr = "student"}
 #' @param L number of subdivisions of each axis of the hypercube
 #'   \code{(0,1)^(p+1)}
+#' @param stopifbig logical, whether to stop if the algorithm requires huge 
+#'   matrices
 #'
 #' @return A \code{gfilinreg} object, list with the fiducial samples and the
 #'   weights.
@@ -35,7 +37,7 @@
 #' @importFrom data.table CJ as.data.table uniqueN
 #' @export
 gfilinreg <- function(
-  formula, data = NULL, distr = "student", df = Inf, L = 30L
+  formula, data = NULL, distr = "student", df = Inf, L = 30L, stopifbig = TRUE
 ){
   distr <- match.arg(distr, c("normal", "student", "cauchy", "logistic"))
   if(distr == "student"){
@@ -55,6 +57,18 @@ gfilinreg <- function(
     stop("Design is not of full rank.")
   }
   q <- p + 1L
+  if(stopifbig && (q * L^q > 2e6)){
+    stop(
+      paste0(
+        sprintf(
+          "The algorithm needs to deal with two big matrices (%g entries). ", 
+          q * L^q
+        ), 
+        "Set the option `stopifbig` to FALSE if you want to proceed anyway."
+      )
+    )
+  }
+  M <- ceiling(L^q / 2L)
   # centers of hypercubes (volume 1/L^p)
   centers <- as.matrix(
     do.call(
@@ -74,14 +88,14 @@ gfilinreg <- function(
   yI <- y[I]
   ymI <- y[-I]
   # algorithm
-  if(Eigen_rank(cbind(XI, 1)) < q){
-    # remove centers having equal coordinates (H'H is not invertible)
-    centers <-
-      centers[apply(centers, 1L, function(row) uniqueN(row) > 1L),]
-    M <- (L^q - L) / 2L # number of centers yielding sigma>0
-  }else{
-    M <- floor(L^q / 2L) # TODO: test !!! - done, seems OK
-  }
+  # if(Eigen_rank(cbind(XI, 1)) < q){
+  #   # remove centers having equal coordinates (H'H is not invertible)
+  #   centers <-
+  #     centers[apply(centers, 1L, function(row) uniqueN(row) > 1L),]
+  #   M <- (L^q - L) / 2L # number of centers yielding sigma>0
+  # }else{
+  #   M <- floor(L^q / 2L) # TODO: test !!! - done, seems OK
+  # }
   if(distr == "normal"){
     cpp <- f_normal(
       centers = t(centers),
