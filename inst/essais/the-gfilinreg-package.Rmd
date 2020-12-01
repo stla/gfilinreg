@@ -1,0 +1,68 @@
+---
+title: "Untitled"
+author: "Stéphane Laurent"
+date: "01/12/2020"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The main function of the 'gfilinreg' package, namely `gfilinreg`, returns some 
+weighted samples of the generalized fiducial distribution of the parameters of 
+a linear regression model whose error terms are distributed according to a 
+Gaussian, Student, Cauchy, or a logistic distribution.
+
+Let's have a look at a simple linear regression model with Gaussian errors:
+
+```{r simplereg}
+library(gfilinreg)
+set.seed(666L)
+x <- rgamma(6L, shape = 10, rate = 1)
+y <- rnorm(6L, mean = x, sd = 2)
+dat <- data.frame(x = x, y = y)
+fidsamples <- gfilinreg(y ~ x, data = dat, distr = "normal", L = 150L)
+```
+
+The algorithm involves a partition of the hypercube ${(0,1)}^{p+1}$, where $p$ 
+is the dimension of the model (the number of columns of the $X$ matrix), and 
+the integer argument `L` of the `gfilinreg` function is the desired number of 
+subdivisions of each edge of the hypercube.
+
+A quick summary of the fiducial samples is provided by the `gfiSummary` 
+function: 
+
+```{r simplereg_summary}
+gfiSummary(fidsamples)
+```
+
+Let's compare with `lm`:
+
+```{r simplereg_lm}
+lmfit <- lm(y ~ x, data = dat)
+coefficients(lmfit)
+sigma(lmfit)
+confint(lmfit)
+```
+
+Excepted for the scale parameter $\sigma$, results are very similar.
+
+One can generate simulations of fiducial predictive distributions and, based on 
+these distributions, one can get fiducial prediction intervals:
+
+```{r}
+new <- data.frame(x = c(9, 10, 11))
+fidpred <- gfilinregPredictive(fidsamples, newdata = new)
+gfiSummary(fidpred)
+predict(lmfit, newdata = new, interval = "prediction")
+```
+
+Again, there is a strong agreement between the fiducial results and the 
+frequentist results.
+
+
+
+
