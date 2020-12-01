@@ -53,7 +53,7 @@ Excepted for the scale parameter $\sigma$, results are very similar.
 One can generate simulations of fiducial predictive distributions and, based on 
 these distributions, one can get fiducial prediction intervals:
 
-```{r}
+```{r simplereg_predictions}
 new <- data.frame(x = c(9, 10, 11))
 fidpred <- gfilinregPredictive(fidsamples, newdata = new)
 gfiSummary(fidpred)
@@ -64,5 +64,15 @@ Again, there is a strong agreement between the fiducial results and the
 frequentist results.
 
 
+## A small simulation study with Cauchy errors
+
+Now we perform some simulations of a "t-test model" with Cauchy errors, we 
+store the fiducial summaries for each simulated dataset and we also store the 
+maximum likelihood estimates thanks to the 'heavy' package. We simulate $500$ 
+datasets.
+
+```{r simulations, eval=FALSE}
+
+```
 
 
