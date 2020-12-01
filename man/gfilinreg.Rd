@@ -37,3 +37,9 @@ gfi <- gfilinreg(y ~ x, distr = "cauchy", L = 30L)
 gfiSummary(gfi)
 
 }
+\references{
+Jan Hannig, Randy C.S. Lai, Thomas C.M. Lee. 
+  \emph{Computational issues of generalized fiducial inference}.
+  Computational Statistics and Data Analysis 71 (2014), 849–858.
+  <doi:10.1016/j.csda.2013.03.003>
+}

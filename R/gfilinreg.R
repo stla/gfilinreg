@@ -16,6 +16,11 @@
 #'
 #' @return A \code{gfilinreg} object, list with the fiducial samples and the
 #'   weights.
+#'   
+#' @references Jan Hannig, Randy C.S. Lai, Thomas C.M. Lee. 
+#'   \emph{Computational issues of generalized fiducial inference}.
+#'   Computational Statistics and Data Analysis 71 (2014), 849–858.
+#'   <doi:10.1016/j.csda.2013.03.003>
 #'
 #' @examples set.seed(666L)
 #' x <- c(1, 2, 3, 4)
