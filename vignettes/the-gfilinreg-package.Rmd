@@ -5,8 +5,10 @@ output:
     css: vignette.css
 vignette: >
   %\VignetteIndexEntry{The 'gfilinreg' package}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include = FALSE}
@@ -109,4 +111,89 @@ for(i in 1L:nsims){
 }
 FID <- rbindlist(FIDlist)
 ```
+
+The above simulations are not performed in this vignette. They are available in 
+the package:
+
+```{r load_simulations}
+library(data.table)
+data("FID")
+data("MAXLHD")
+```
+
+
+### Estimates
+
+```{r estimate_group1}
+library(kde1d)
+group1_maxlhd     <- MAXLHD[, "group1"]
+group1_fid_mean   <- FID[parameter == "group1"][["mean"]]
+group1_fid_median <- FID[parameter == "group1"][["median"]]
+
+kfit_maxlhd     <- kde1d(group1_maxlhd, mult = 4)
+kfit_fid_mean   <- kde1d(group1_fid_mean, mult = 4)
+kfit_fid_median <- kde1d(group1_fid_median, mult = 4)
+
+curve(
+  dkde1d(x, kfit_maxlhd), from = -4, to = 4, 
+  lwd = 2, col = "red", lty = "dashed"
+)
+curve(
+  dkde1d(x, kfit_fid_mean), add = TRUE, 
+  lwd = 2, col = "green", lty = "dashed"
+)
+curve(
+  dkde1d(x, kfit_fid_median), add = TRUE, 
+  lwd = 2, col = "blue", lty = "dashed"
+)
+```
+
+```{r estimate_group2}
+group2_maxlhd     <- MAXLHD[, "group2"]
+group2_fid_mean   <- FID[parameter == "group2"][["mean"]][-333L]
+group2_fid_median <- FID[parameter == "group2"][["median"]][-333L]
+
+kfit_maxlhd     <- kde1d(group2_maxlhd, mult = 4)
+kfit_fid_mean   <- kde1d(group2_fid_mean, mult = 4)
+kfit_fid_median <- kde1d(group2_fid_median, mult = 4)
+
+curve(
+  dkde1d(x, kfit_maxlhd), from = -2, to = 8, 
+  lwd = 2, col = "red", lty = "dashed"
+)
+curve(
+  dkde1d(x, kfit_fid_mean), add = TRUE, 
+  lwd = 2, col = "green", lty = "dashed"
+)
+curve(
+  dkde1d(x, kfit_fid_median), add = TRUE, 
+  lwd = 2, col = "blue", lty = "dashed"
+)
+```
+
+```{r estimate_group2}
+sigma_maxlhd     <- MAXLHD[, "sigma"]
+sigma_fid_mean   <- FID[parameter == "sigma"][["mean"]][-333L]
+sigma_fid_median <- FID[parameter == "sigma"][["median"]][-333L]
+
+kfit_maxlhd     <- kde1d(sigma_maxlhd, xmin = 0, mult = 4)
+kfit_fid_mean   <- kde1d(sigma_fid_mean, xmin = 0, mult = 4)
+kfit_fid_median <- kde1d(sigma_fid_median, xmin = 0, mult = 4)
+
+curve(
+  dkde1d(x, kfit_maxlhd), from = 0, to = 4, 
+  lwd = 2, col = "red", lty = "dashed"
+)
+curve(
+  dkde1d(x, kfit_fid_mean), add = TRUE, 
+  lwd = 2, col = "green", lty = "dashed"
+)
+curve(
+  dkde1d(x, kfit_fid_median), add = TRUE, 
+  lwd = 2, col = "blue", lty = "dashed"
+)
+abline(v = 1, col = "maroon", lwd = 2)
+```
+
+### Frequentist coverage
 

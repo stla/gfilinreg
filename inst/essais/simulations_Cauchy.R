@@ -34,3 +34,36 @@ saveRDS(FIDlist, "~/Work/R/gfilinreg/inst/essais/FIDlist.rds")
 
 # FID[param=="group1"] etc
 
+MAXLHD <- readRDS("~/Work/R/gfilinreg/inst/essais/MAXLHD.rds")
+FID <- readRDS("~/Work/R/gfilinreg/inst/essais/FID.rds")
+
+#usethis::use_data(MAXLHD, FID)
+
+################################################################################
+library(data.table)
+data("FID")
+data("MAXLHD")
+
+library(kde1d)
+group1_maxlhd     <- MAXLHD[, "group1"]
+group1_fid_mean   <- FID[parameter == "group1"][["mean"]]
+group1_fid_median <- FID[parameter == "group1"][["median"]]
+
+kfit_maxlhd     <- kde1d(group1_maxlhd, mult = 4)
+kfit_fid_mean   <- kde1d(group1_fid_mean, mult = 4)
+kfit_fid_median <- kde1d(group1_fid_median, mult = 4)
+
+curve(
+  dkde1d(x, kfit_maxlhd), from = -4, to = 4, 
+  lwd = 2, col = "red", lty = "dashed"
+)
+curve(
+  dkde1d(x, kfit_fid_mean), add = TRUE, 
+  lwd = 2, col = "green", lty = "dashed"
+)
+curve(
+  dkde1d(x, kfit_fid_median), add = TRUE, 
+  lwd = 2, col = "blue", lty = "dashed"
+)
+
+
