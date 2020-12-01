@@ -24,11 +24,13 @@ library(heavy)
 
 set.seed(666)
 dat <- data.frame(
-  group = gl(2, 5),
-  y = c(rcauchy(5), 2 + rcauchy(5))
+  group = gl(2, 25),
+  y = c(rcauchy(25), 2 + rcauchy(25))
 )
 
-heavyLm(y ~ 0 + group, data = dat, family = Cauchy())
+(hfit <- heavyLm(y ~ 0 + group, data = dat, family = Cauchy()))
+hfit$coefficients
+sqrt(hfit$sigma2)
 
 library(MASS)
 X <- model.matrix(~ 0 + group, data = dat)
@@ -37,3 +39,5 @@ likelihood <- function(y, beta0, beta1, sigma){
 }
 (ML <- MASS::fitdistr(dat$y, likelihood, list(beta0=1, beta1=2, sigma=1)))
 
+gfi <- gfilinreg(y ~ 0 + group, data = dat, L = 100L, distr = "cauchy")
+gfiSummary(gfi)
