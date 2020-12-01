@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   message = FALSE,
-  fig.width = 5, fig.height = 4.5
+  fig.width = 6, fig.height = 5
 )
 ```
 
@@ -183,7 +183,7 @@ For the scale parameter `sigma`, there are some differences. The maximum
 likelihood estimates often underestimate the true value, and the true value is 
 close to the median of the fiducial medians: 
 
-```{r estimate_group2}
+```{r estimate_sigma}
 sigma_maxlhd     <- MAXLHD[, "sigma"]
 sigma_fid_mean   <- FID[parameter == "sigma"][["mean"]][-333L]
 sigma_fid_median <- FID[parameter == "sigma"][["median"]][-333L]
