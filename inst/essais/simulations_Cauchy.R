@@ -26,7 +26,6 @@ for(i in 1L:nsims){
     as.data.table(gfiSummary(fidsamples))
   )
 }
-
 FID <- rbindlist(FIDlist)
 
 saveRDS(MAXLHD, "~/Work/R/gfilinreg/inst/essais/MAXLHD.rds")

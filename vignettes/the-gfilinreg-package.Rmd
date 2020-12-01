@@ -1,14 +1,21 @@
 ---
-title: "Untitled"
-author: "Stéphane Laurent"
-date: "01/12/2020"
-output: html_document
-editor_options: 
-  chunk_output_type: console
+title: "The 'gfilinreg' package"
+output: 
+  rmarkdown::html_vignette:
+    css: vignette.css
+vignette: >
+  %\VignetteIndexEntry{The 'gfilinreg' package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  fig.width = 5, fig.height = 4.5
+)
 ```
 
 The main function of the 'gfilinreg' package, namely `gfilinreg`, returns some 
@@ -102,5 +109,4 @@ for(i in 1L:nsims){
 }
 FID <- rbindlist(FIDlist)
 ```
-
 

@@ -17,8 +17,13 @@ Imports: Rcpp,
   spatstat, 
   EigenR,
   data.table
-Suggests: heavy, kde1d
+Suggests: 
+    heavy,
+    kde1d,
+    knitr,
+    rmarkdown
 LinkingTo: Rcpp, RcppEigen, BH
 RoxygenNote: 7.1.1
 URL: https://github.com/stla/gfilinreg
 BugReports: https://github.com/stla/gfilinreg/issues
+VignetteBuilder: knitr
