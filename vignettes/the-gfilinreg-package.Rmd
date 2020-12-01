@@ -201,6 +201,9 @@ abline(v = 1, col = "yellow", lwd = 3)
 
 ### Frequentist coverage
 
+Below are the coverage probabilities of the fiducial confidence intervals 
+estimated from the $500$ simulations.
+
 ```{r coverages}
 # group1
 group1 <- FID[parameter == "group1"]
@@ -219,3 +222,8 @@ mean(1 < sigma[["upr"]])
 mean(sigma[["lwr"]] < 1 & 1 < sigma[["upr"]])
 ```
 
+For the parameters `group1` and `group2`, the coverage probabilities are close 
+to the nominal level. For `sigma`, only the upper bound yields a coverage 
+probability close to the nominal level. The lower bound is too large on average. 
+But remember that the datasets we simulated are small ($6$ observations per 
+group).
