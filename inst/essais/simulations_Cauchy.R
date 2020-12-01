@@ -10,6 +10,7 @@ colnames(MLD) <- c("group1", "group2", "sigma")
 FIDlist <- vector("list", length = nsims)
 
 for(i in 1L:nsims){
+  cat(i, " - ")
   dat <- data.frame(
     group = gl(2, 6),
     y = c(rcauchy(6), 2 + rcauchy(6))
@@ -26,6 +27,10 @@ for(i in 1L:nsims){
 }
 
 FID <- rbindlist(FIDlist)
+
+saveRDS(MLD, "~/Work/R/gfilinreg/inst/essais/MLD.rds")
+saveRDS(FID, "~/Work/R/gfilinreg/inst/essais/FID.rds")
+saveRDS(FIDlist, "~/Work/R/gfilinreg/inst/essais/FIDlist.rds")
 
 # FID[param=="group1"] etc
 
