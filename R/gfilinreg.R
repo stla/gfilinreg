@@ -57,7 +57,7 @@ gfilinreg <- function(
     stop("Design is not of full rank.")
   }
   q <- p + 1L
-  if(stopifbig && (q * L^q > 4e6)){
+  if(stopifbig && (q * L^q > 1.1e7)){
     stop(
       paste0(
         sprintf(
