@@ -40,6 +40,7 @@ gfilinreg <- function(
   formula, data = NULL, distr = "student", df = Inf, L = 30L, Kmax = 50L,
   stopifbig = TRUE
 ){
+  stopifnot(Kmax >= 2)
   distr <- match.arg(distr, c("normal", "student", "cauchy", "logistic"))
   if(distr == "student"){
     if(df == Inf){
@@ -90,52 +91,47 @@ gfilinreg <- function(
     )
   )
   # algorithm
-  THETAS <- LOGWEIGHTS <- vector("list", K)
-  for(k in 1L:K){
-    # select indices
-    I <- combs[, k]
-    XI <- X[I, , drop = FALSE]
-    XmI <- X[-I, , drop = FALSE]
-    yI <- y[I]
-    ymI <- y[-I]
-    if(distr == "normal"){
-      cpp <- f_normal(
-        centers = t(centers),
-        XI = XI, XmI = XmI,
-        yI = yI, ymI = ymI,
-        M = M, n = n
-      )
-    }else if(distr == "student"){
-      cpp <- f_student(
-        centers = t(centers),
-        XI = XI, XmI = XmI,
-        yI = yI, ymI = ymI,
-        M = M, n = n,
-        nu = df
-      )
-    }else if(distr == "cauchy"){
-      cpp <- f_cauchy(
-        centers = t(centers),
-        XI = XI, XmI = XmI,
-        yI = yI, ymI = ymI,
-        M = M, n = n
-      )
-    }else if(distr == "logistic"){
-      cpp <- f_logistic(
-        centers = t(centers),
-        XI = XI, XmI = XmI,
-        yI = yI, ymI = ymI,
-        M = M, n = n
-      )
-    }
-    THETAS[[k]] <- 
-      as.data.table(`colnames<-`(cpp[["Theta"]], c(betas, "sigma")))
-    LOGWEIGHTS[[k]] <- cpp[["logWeights"]]
+  # select indices
+  I <- combs[, k]
+  XIs <- do.call(cbind, lapply(1L:K, function(k) X[combs[, k], , drop = FALSE]))
+  XmIs <- 
+    do.call(cbind, lapply(1L:K, function(k) X[-combs[, k], , drop = FALSE]))
+  yIs <- apply(combs, 2L, function(I) y[I])
+  yIs <- rbind(apply(combs, 2L, function(I) y[-I]))
+  if(distr == "normal"){
+    cpp <- f_normal(
+      centers = t(centers),
+      XIs = XIs, XmIs = XmIs,
+      yIs = yIs, ymIs = ymIs,
+      K = K, p = p, M = M, n = n
+    )
+  }else if(distr == "student"){
+    cpp <- f_student(
+      centers = t(centers),
+      XIs = XIs, XmIs = XmIs,
+      yIs = yIs, ymIs = ymIs,
+      K = K, p = p, M = M, n = n,
+      nu = df
+    )
+  }else if(distr == "cauchy"){
+    cpp <- f_cauchy(
+      centers = t(centers),
+      XIs = XIs, XmIs = XmIs,
+      yIs = yIs, ymIs = ymIs,
+      K = K, p = p, M = M, n = n
+    )
+  }else if(distr == "logistic"){
+    cpp <- f_logistic(
+      centers = t(centers),
+      XIs = XIs, XmIs = XmIs,
+      yIs = yIs, ymIs = ymIs,
+      K = K, p = p, M = M, n = n
+    )
   }
   #
-  J <- exp(do.call(c, LOGWEIGHTS))
+  J <- exp(cpp[["logWeights"]])
   out <- list(
-    Theta = rbindlist(THETAS),
+    Theta = as.data.table(`colnames<-`(cpp[["Theta"]], c(betas, "sigma"))),
     weight = J/sum(J)
   )
   attr(out, "distr") <- distr
