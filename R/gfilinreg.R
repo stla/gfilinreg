@@ -33,10 +33,10 @@
 #' @importFrom EigenR Eigen_rank
 #' @importFrom stats model.matrix as.formula
 #' @importFrom lazyeval f_eval_lhs f_rhs
-#' @importFrom data.table CJ as.data.table uniqueN
+#' @importFrom data.table CJ as.data.table rbindlist
 #' @export
 gfilinreg <- function(
-  formula, data = NULL, distr = "student", df = Inf, L = 30L, K = 50L,
+  formula, data = NULL, distr = "student", df = Inf, L = 30L, Kmax = 50L,
   stopifbig = TRUE
 ){
   distr <- match.arg(distr, c("normal", "student", "cauchy", "logistic"))
@@ -58,22 +58,23 @@ gfilinreg <- function(
   }
   q <- p + 1L
   #
-  goodCombs <- goodCombinations(X)
-  if(K >= ncol(goodCombs)){
-    K <- ncol(goodCombs)
+  goodCombs <- goodCombinations(X) # !! if not too big ! if big, resort to sampling
+  nGoodCombs <- ncol(goodCombs)
+  if(Kmax >= nGoodCombs){
+    K <- nGoodCombs
     combs <- goodCombs
   }else{
-    
+    combs <- goodCombs[, sample.int(nGoodCombs, Kmax)]
+    K <- Kmax
   }
-  
-  
-  
-  if(stopifbig && (q * L^q > 1.1e7)){
+  #
+  if(stopifbig && (K * q * L^q / 2 > 1.1e7)){
     stop(
       paste0(
         "The algorithm needs to deal with two big matrices ",
         sprintf(
-          "(%g entries: %g GB). ", q * L^q, q * L^q * 8e-9
+          "(the biggest with %g entries: %g GB). ", 
+          K * q * L^q / 2, K * q * L^q / 2 * 8e-9
         ), 
         "Set the option `stopifbig` to FALSE if you want to proceed anyway."
       )
@@ -87,59 +88,53 @@ gfilinreg <- function(
       rep(list(seq(0, 1, length.out = L+1L)[-1L] - 1/(2*L)), q)
     )
   )
-  # select indices
-  Iiterator <- icombinations(n, q)
-  I <- Iiterator$getnext()
-  XI <- X[I, , drop = FALSE]
-  while(Eigen_rank(XI) < p){
-    I <- Iiterator$getnext()
-    XI <- X[I, , drop = FALSE]
-  }
-  XmI <- X[-I, , drop = FALSE]
-  yI <- y[I]
-  ymI <- y[-I]
   # algorithm
-  # if(Eigen_rank(cbind(XI, 1)) < q){
-  #   # remove centers having equal coordinates (H'H is not invertible)
-  #   centers <-
-  #     centers[apply(centers, 1L, function(row) uniqueN(row) > 1L),]
-  #   M <- (L^q - L) / 2L # number of centers yielding sigma>0
-  # }else{
-  #   M <- floor(L^q / 2L) # TODO: test !!! - done, seems OK
-  # }
-  if(distr == "normal"){
-    cpp <- f_normal(
-      centers = t(centers),
-      XI = XI, XmI = XmI,
-      yI = yI, ymI = ymI,
-      M = M, n = n
-    )
-  }else if(distr == "student"){
-    cpp <- f_student(
-      centers = t(centers),
-      XI = XI, XmI = XmI,
-      yI = yI, ymI = ymI,
-      M = M, n = n,
-      nu = df
-    )
-  }else if(distr == "cauchy"){
-    cpp <- f_cauchy(
-      centers = t(centers),
-      XI = XI, XmI = XmI,
-      yI = yI, ymI = ymI,
-      M = M, n = n
-    )
-  }else if(distr == "logistic"){
-    cpp <- f_logistic(
-      centers = t(centers),
-      XI = XI, XmI = XmI,
-      yI = yI, ymI = ymI,
-      M = M, n = n
-    )
+  THETAS <- LOGWEIGHTS <- vector("list", K)
+  for(k in 1L:K){
+    # select indices
+    I <- combs[, k]
+    XI <- X[I, , drop = FALSE]
+    XmI <- X[-I, , drop = FALSE]
+    yI <- y[I]
+    ymI <- y[-I]
+    if(distr == "normal"){
+      cpp <- f_normal(
+        centers = t(centers),
+        XI = XI, XmI = XmI,
+        yI = yI, ymI = ymI,
+        M = M, n = n
+      )
+    }else if(distr == "student"){
+      cpp <- f_student(
+        centers = t(centers),
+        XI = XI, XmI = XmI,
+        yI = yI, ymI = ymI,
+        M = M, n = n,
+        nu = df
+      )
+    }else if(distr == "cauchy"){
+      cpp <- f_cauchy(
+        centers = t(centers),
+        XI = XI, XmI = XmI,
+        yI = yI, ymI = ymI,
+        M = M, n = n
+      )
+    }else if(distr == "logistic"){
+      cpp <- f_logistic(
+        centers = t(centers),
+        XI = XI, XmI = XmI,
+        yI = yI, ymI = ymI,
+        M = M, n = n
+      )
+    }
+    THETAS[[k]] <- cpp[["Theta"]]
+    LOGWEIGHTS[[k]] <- cpp[["logWeights"]]
   }
-  J <- exp(cpp[["logWeights"]])
+  #
+  J <- exp(do.call(c, LOGWEIGHTS))
+  Theta <- rbindlist(THETAS)
   out <- list(
-    Theta = as.data.table(`colnames<-`(cpp[["Theta"]], c(betas, "sigma"))),
+    Theta = as.data.table(`colnames<-`(Theta, c(betas, "sigma"))),
     weight = J/sum(J)
   )
   attr(out, "distr") <- distr
