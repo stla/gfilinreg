@@ -13,7 +13,6 @@ Imports: Rcpp,
   lazyeval, 
   stats, 
   utils, 
-  arrangements, 
   spatstat, 
   EigenR,
   data.table

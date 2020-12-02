@@ -30,14 +30,14 @@
 #' gfi <- gfilinreg(y ~ x, distr = "cauchy", L = 30L)
 #' gfiSummary(gfi)
 #'
-#' @importFrom arrangements icombinations
 #' @importFrom EigenR Eigen_rank
 #' @importFrom stats model.matrix as.formula
 #' @importFrom lazyeval f_eval_lhs f_rhs
 #' @importFrom data.table CJ as.data.table uniqueN
 #' @export
 gfilinreg <- function(
-  formula, data = NULL, distr = "student", df = Inf, L = 30L, stopifbig = TRUE
+  formula, data = NULL, distr = "student", df = Inf, L = 30L, K = 50L,
+  stopifbig = TRUE
 ){
   distr <- match.arg(distr, c("normal", "student", "cauchy", "logistic"))
   if(distr == "student"){
@@ -57,6 +57,17 @@ gfilinreg <- function(
     stop("Design is not of full rank.")
   }
   q <- p + 1L
+  #
+  goodCombs <- goodCombinations(X)
+  if(K >= ncol(goodCombs)){
+    K <- ncol(goodCombs)
+    combs <- goodCombs
+  }else{
+    
+  }
+  
+  
+  
   if(stopifbig && (q * L^q > 1.1e7)){
     stop(
       paste0(
