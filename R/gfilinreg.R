@@ -13,6 +13,7 @@
 #'   \code{distr = "student"}
 #' @param L number of subdivisions of each axis of the hypercube
 #'   \code{(0,1)^(p+1)}
+#' @param Kmax maximal number of combinations of indices to use
 #' @param stopifbig logical, whether to stop if the algorithm requires huge 
 #'   matrices
 #'
@@ -68,7 +69,7 @@ gfilinreg <- function(
     K <- Kmax
   }
   #
-  if(stopifbig && (K * q * L^q / 2 > 1.1e7)){
+  if(stopifbig && (K * q * L^q / 2 > 8e7)){
     stop(
       paste0(
         "The algorithm needs to deal with two big matrices ",
@@ -127,14 +128,14 @@ gfilinreg <- function(
         M = M, n = n
       )
     }
-    THETAS[[k]] <- cpp[["Theta"]]
+    THETAS[[k]] <- 
+      as.data.table(`colnames<-`(cpp[["Theta"]], c(betas, "sigma")))
     LOGWEIGHTS[[k]] <- cpp[["logWeights"]]
   }
   #
   J <- exp(do.call(c, LOGWEIGHTS))
-  Theta <- rbindlist(THETAS)
   out <- list(
-    Theta = as.data.table(`colnames<-`(Theta, c(betas, "sigma"))),
+    Theta = rbindlist(THETAS),
     weight = J/sum(J)
   )
   attr(out, "distr") <- distr

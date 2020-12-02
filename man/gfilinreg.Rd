@@ -10,6 +10,7 @@ gfilinreg(
   distr = "student",
   df = Inf,
   L = 30L,
+  Kmax = 50L,
   stopifbig = TRUE
 )
 }
@@ -26,6 +27,8 @@ gfilinreg(
 
 \item{L}{number of subdivisions of each axis of the hypercube
 \code{(0,1)^(p+1)}}
+
+\item{Kmax}{maximal number of combinations of indices to use}
 
 \item{stopifbig}{logical, whether to stop if the algorithm requires huge 
 matrices}

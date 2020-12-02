@@ -27,6 +27,10 @@ for(i in 1L:333L){
   # )
 }
 
+fs <- gfilinreg(y ~ 0 + group, data = dat, L = 50L, distr = "cauchy")
+gfiSummary(fs)
+
+#####
 library(MASS)
 X <- model.matrix(~ 0 + group, data = dat)
 likelihood <- function(y, beta0, beta1, sigma){
