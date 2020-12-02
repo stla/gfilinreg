@@ -91,13 +91,11 @@ gfilinreg <- function(
     )
   )
   # algorithm
-  # select indices
-  I <- combs[, k]
   XIs <- do.call(cbind, lapply(1L:K, function(k) X[combs[, k], , drop = FALSE]))
   XmIs <- 
     do.call(cbind, lapply(1L:K, function(k) X[-combs[, k], , drop = FALSE]))
   yIs <- apply(combs, 2L, function(I) y[I])
-  yIs <- rbind(apply(combs, 2L, function(I) y[-I]))
+  ymIs <- rbind(apply(combs, 2L, function(I) y[-I]))
   if(distr == "normal"){
     cpp <- f_normal(
       centers = t(centers),

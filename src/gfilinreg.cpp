@@ -62,44 +62,10 @@ double logdlogistic(const Eigen::VectorXd& x) {
 
 // [[Rcpp::export]]
 Rcpp::List f_normal(const Eigen::MatrixXd& centers,
-                    const Eigen::MatrixXd& XI,
-                    const Eigen::MatrixXd& XmI,
-                    const Eigen::VectorXd& yI,
-                    const Eigen::VectorXd& ymI,
-                    const size_t M,
-                    const size_t n) {
-  const size_t ncenters = centers.cols();
-  const size_t q = XI.cols() + 1;
-  size_t counter = 0;
-  Eigen::VectorXd J(M);
-  Eigen::MatrixXd Theta(q, M);
-  for(size_t m = 0; m < ncenters; m++) {
-    Eigen::MatrixXd H(q, q);
-    H << XI, qnorm(centers.col(m));
-    Eigen::MatrixXd Ht = H.transpose();
-    const Eigen::FullPivLU<Eigen::MatrixXd> lu(Ht * H);
-    if(lu.isInvertible()) {
-      Eigen::VectorXd theta = lu.inverse() * Ht * yI;
-      double sigma = theta.coeff(q - 1);
-      if(sigma > 0) {
-        Eigen::VectorXd v = ymI - XmI * theta.topRows(q - 1);
-        J(counter) = logdnorm(v / sigma) - (n - q) * log(sigma);
-        Theta.col(counter) = theta;
-        counter++;
-      }
-    }
-  }
-  return Rcpp::List::create(
-    Rcpp::Named("Theta") = Theta.leftCols(counter).transpose(),
-    Rcpp::Named("logWeights") = J.topRows(counter));
-}
-
-// [[Rcpp::export]]
-Rcpp::List f_cauchy(const Eigen::MatrixXd& centers,
                     const Eigen::MatrixXd& XIs,
                     const Eigen::MatrixXd& XmIs,
-                    const Eigen::VectorXd& yIs,
-                    const Eigen::VectorXd& ymIs,
+                    const Eigen::MatrixXd& yIs,
+                    const Eigen::MatrixXd& ymIs,
                     const size_t K,
                     const size_t p,
                     const size_t M,
@@ -108,9 +74,56 @@ Rcpp::List f_cauchy(const Eigen::MatrixXd& centers,
   const size_t q = p + 1;
   Eigen::MatrixXd THETAS(q, 0);
   Eigen::VectorXd LOGWEIGHTS(0);
-  for(size_t k = 0; k < K; k++){
-    const Eigen::MatrixXd XI = XIs.block(0, k*p, q, p);
-    const Eigen::MatrixXd XmI = XmIs.block(0, k*p, q, p);
+  for(size_t k = 0; k < K; k++) {
+    const Eigen::MatrixXd XI = XIs.block(0, k * p, q, p);
+    const Eigen::MatrixXd XmI = XmIs.block(0, k * p, n - q, p);
+    const Eigen::VectorXd yI = yIs.col(k);
+    const Eigen::VectorXd ymI = ymIs.col(k);
+    size_t counter = 0;
+    Eigen::VectorXd J(M);
+    Eigen::MatrixXd Theta(q, M);
+    for(size_t m = 0; m < ncenters; m++) {
+      Eigen::MatrixXd H(q, q);
+      H << XI, qnorm(centers.col(m));
+      Eigen::MatrixXd Ht = H.transpose();
+      const Eigen::FullPivLU<Eigen::MatrixXd> lu(Ht * H);
+      if(lu.isInvertible()) {
+        Eigen::VectorXd theta = lu.inverse() * Ht * yI;
+        double sigma = theta.coeff(q - 1);
+        if(sigma > 0) {
+          Eigen::VectorXd v = ymI - XmI * theta.head(q - 1);
+          J(counter) = logdnorm(v / sigma) - (n - q) * log(sigma);
+          Theta.col(counter) = theta;
+          counter++;
+        }
+      }
+    }
+    THETAS.conservativeResize(Eigen::NoChange, THETAS.cols() + counter);
+    THETAS.rightCols(counter) = Theta.leftCols(counter);
+    LOGWEIGHTS.conservativeResize(LOGWEIGHTS.size() + counter);
+    LOGWEIGHTS.tail(counter) = J.head(counter);
+  }
+  return Rcpp::List::create(Rcpp::Named("Theta") = THETAS.transpose(),
+                            Rcpp::Named("logWeights") = LOGWEIGHTS);
+}
+
+// [[Rcpp::export]]
+Rcpp::List f_cauchy(const Eigen::MatrixXd& centers,
+                    const Eigen::MatrixXd& XIs,
+                    const Eigen::MatrixXd& XmIs,
+                    const Eigen::MatrixXd& yIs,
+                    const Eigen::MatrixXd& ymIs,
+                    const size_t K,
+                    const size_t p,
+                    const size_t M,
+                    const size_t n) {
+  const size_t ncenters = centers.cols();
+  const size_t q = p + 1;
+  Eigen::MatrixXd THETAS(q, 0);
+  Eigen::VectorXd LOGWEIGHTS(0);
+  for(size_t k = 0; k < K; k++) {
+    const Eigen::MatrixXd XI = XIs.block(0, k * p, q, p);
+    const Eigen::MatrixXd XmI = XmIs.block(0, k * p, n - q, p);
     const Eigen::VectorXd yI = yIs.col(k);
     const Eigen::VectorXd ymI = ymIs.col(k);
     size_t counter = 0;
@@ -137,76 +150,101 @@ Rcpp::List f_cauchy(const Eigen::MatrixXd& centers,
     LOGWEIGHTS.conservativeResize(LOGWEIGHTS.size() + counter);
     LOGWEIGHTS.tail(counter) = J.head(counter);
   }
-  return Rcpp::List::create(
-    Rcpp::Named("Theta") = THETAS.transpose(),
-    Rcpp::Named("logWeights") = LOGWEIGHTS);
+  return Rcpp::List::create(Rcpp::Named("Theta") = THETAS.transpose(),
+                            Rcpp::Named("logWeights") = LOGWEIGHTS);
 }
 
 // [[Rcpp::export]]
 Rcpp::List f_student(const Eigen::MatrixXd& centers,
-                     const Eigen::MatrixXd& XI,
-                     const Eigen::MatrixXd& XmI,
-                     const Eigen::VectorXd& yI,
-                     const Eigen::VectorXd& ymI,
+                     const Eigen::MatrixXd& XIs,
+                     const Eigen::MatrixXd& XmIs,
+                     const Eigen::MatrixXd& yIs,
+                     const Eigen::MatrixXd& ymIs,
+                     const size_t K,
+                     const size_t p,
                      const size_t M,
                      const size_t n,
                      const double nu) {
   const size_t ncenters = centers.cols();
-  const size_t q = XI.cols() + 1;
-  size_t counter = 0;
-  Eigen::VectorXd J(M);
-  Eigen::MatrixXd Theta(q, M);
-  for(size_t m = 0; m < ncenters; m++) {
-    Eigen::MatrixXd H(q, q);
-    H << XI, qt(centers.col(m), nu);
-    Eigen::MatrixXd Ht = H.transpose();
-    const Eigen::FullPivLU<Eigen::MatrixXd> lu(Ht * H);
-    if(lu.isInvertible()) {
-      Eigen::VectorXd theta = lu.inverse() * Ht * yI;
-      double sigma = theta.coeff(q - 1);
-      if(sigma > 0) {
-        Eigen::VectorXd v = ymI - XmI * theta.topRows(q - 1);
-        J(counter) = logdt(v / sigma, nu) - (n - q) * log(sigma);
-        Theta.col(counter) = theta;
-        counter++;
+  const size_t q = p + 1;
+  Eigen::MatrixXd THETAS(q, 0);
+  Eigen::VectorXd LOGWEIGHTS(0);
+  for(size_t k = 0; k < K; k++) {
+    const Eigen::MatrixXd XI = XIs.block(0, k * p, q, p);
+    const Eigen::MatrixXd XmI = XmIs.block(0, k * p, n - q, p);
+    const Eigen::VectorXd yI = yIs.col(k);
+    const Eigen::VectorXd ymI = ymIs.col(k);
+    size_t counter = 0;
+    Eigen::VectorXd J(M);
+    Eigen::MatrixXd Theta(q, M);
+    for(size_t m = 0; m < ncenters; m++) {
+      Eigen::MatrixXd H(q, q);
+      H << XI, qt(centers.col(m), nu);
+      Eigen::MatrixXd Ht = H.transpose();
+      const Eigen::FullPivLU<Eigen::MatrixXd> lu(Ht * H);
+      if(lu.isInvertible()) {
+        Eigen::VectorXd theta = lu.inverse() * Ht * yI;
+        double sigma = theta.coeff(q - 1);
+        if(sigma > 0) {
+          Eigen::VectorXd v = ymI - XmI * theta.head(q - 1);
+          J(counter) = logdt(v / sigma, nu) - (n - q) * log(sigma);
+          Theta.col(counter) = theta;
+          counter++;
+        }
       }
     }
+    THETAS.conservativeResize(Eigen::NoChange, THETAS.cols() + counter);
+    THETAS.rightCols(counter) = Theta.leftCols(counter);
+    LOGWEIGHTS.conservativeResize(LOGWEIGHTS.size() + counter);
+    LOGWEIGHTS.tail(counter) = J.head(counter);
   }
-  return Rcpp::List::create(
-    Rcpp::Named("Theta") = Theta.leftCols(counter).transpose(),
-    Rcpp::Named("logWeights") = J.topRows(counter));
+  return Rcpp::List::create(Rcpp::Named("Theta") = THETAS.transpose(),
+                            Rcpp::Named("logWeights") = LOGWEIGHTS);
 }
 
 // [[Rcpp::export]]
 Rcpp::List f_logistic(const Eigen::MatrixXd& centers,
-                      const Eigen::MatrixXd& XI,
-                      const Eigen::MatrixXd& XmI,
-                      const Eigen::VectorXd& yI,
-                      const Eigen::VectorXd& ymI,
+                      const Eigen::MatrixXd& XIs,
+                      const Eigen::MatrixXd& XmIs,
+                      const Eigen::MatrixXd& yIs,
+                      const Eigen::MatrixXd& ymIs,
+                      const size_t K,
+                      const size_t p,
                       const size_t M,
                       const size_t n) {
   const size_t ncenters = centers.cols();
-  const size_t q = XI.cols() + 1;
-  size_t counter = 0;
-  Eigen::VectorXd J(M);
-  Eigen::MatrixXd Theta(q, M);
-  for(size_t m = 0; m < ncenters; m++) {
-    Eigen::MatrixXd H(q, q);
-    H << XI, qlogistic(centers.col(m));
-    Eigen::MatrixXd Ht = H.transpose();
-    const Eigen::FullPivLU<Eigen::MatrixXd> lu(Ht * H);
-    if(lu.isInvertible()) {
-      Eigen::VectorXd theta = lu.inverse() * Ht * yI;
-      double sigma = theta.coeff(q - 1);
-      if(sigma > 0) {
-        Eigen::VectorXd v = ymI - XmI * theta.topRows(q - 1);
-        J(counter) = logdlogistic(v / sigma) - (n - q) * log(sigma);
-        Theta.col(counter) = theta;
-        counter++;
+  const size_t q = p + 1;
+  Eigen::MatrixXd THETAS(q, 0);
+  Eigen::VectorXd LOGWEIGHTS(0);
+  for(size_t k = 0; k < K; k++) {
+    const Eigen::MatrixXd XI = XIs.block(0, k * p, q, p);
+    const Eigen::MatrixXd XmI = XmIs.block(0, k * p, n - q, p);
+    const Eigen::VectorXd yI = yIs.col(k);
+    const Eigen::VectorXd ymI = ymIs.col(k);
+    size_t counter = 0;
+    Eigen::VectorXd J(M);
+    Eigen::MatrixXd Theta(q, M);
+    for(size_t m = 0; m < ncenters; m++) {
+      Eigen::MatrixXd H(q, q);
+      H << XI, qlogistic(centers.col(m));
+      Eigen::MatrixXd Ht = H.transpose();
+      const Eigen::FullPivLU<Eigen::MatrixXd> lu(Ht * H);
+      if(lu.isInvertible()) {
+        Eigen::VectorXd theta = lu.inverse() * Ht * yI;
+        double sigma = theta.coeff(q - 1);
+        if(sigma > 0) {
+          Eigen::VectorXd v = ymI - XmI * theta.head(q - 1);
+          J(counter) = logdlogistic(v / sigma) - (n - q) * log(sigma);
+          Theta.col(counter) = theta;
+          counter++;
+        }
       }
     }
+    THETAS.conservativeResize(Eigen::NoChange, THETAS.cols() + counter);
+    THETAS.rightCols(counter) = Theta.leftCols(counter);
+    LOGWEIGHTS.conservativeResize(LOGWEIGHTS.size() + counter);
+    LOGWEIGHTS.tail(counter) = J.head(counter);
   }
-  return Rcpp::List::create(
-      Rcpp::Named("Theta") = Theta.leftCols(counter).transpose(),
-      Rcpp::Named("logWeights") = J.topRows(counter));
+  return Rcpp::List::create(Rcpp::Named("Theta") = THETAS.transpose(),
+                            Rcpp::Named("logWeights") = LOGWEIGHTS);
 }
