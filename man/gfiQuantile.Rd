@@ -2,7 +2,7 @@
 % Please edit documentation in R/inference.R
 \name{gfiQuantile}
 \alias{gfiQuantile}
-\title{Title}
+\title{Fiducial quantiles}
 \usage{
 gfiQuantile(parameter, fidsamples, probs)
 }
@@ -18,7 +18,8 @@ gfiQuantile(parameter, fidsamples, probs)
 Numeric vector of quantiles, of the same length as \code{probs}.
 }
 \description{
-Title
+Quantiles of the fiducial distribution of a parameter of 
+  interest.
 }
 \examples{
 set.seed(666L)

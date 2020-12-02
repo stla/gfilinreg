@@ -1,4 +1,5 @@
-#' Title
+#' Fiducial predictive distribution
+#' @description Simulations of the fiducial predictive distribution.
 #'
 #' @param fidsamples fiducial samples, the output of \code{\link{gfilinreg}}
 #' @param newdata dataframe in which to look for variables with which to 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/predictive.R
 \name{gfilinregPredictive}
 \alias{gfilinregPredictive}
-\title{Title}
+\title{Fiducial predictive distribution}
 \usage{
 gfilinregPredictive(fidsamples, newdata)
 }
@@ -18,7 +18,7 @@ A list with two fields: \code{FPD}, a dataframe containing the
   \code{gfilinreg} object.
 }
 \description{
-Title
+Simulations of the fiducial predictive distribution.
 }
 \examples{
 set.seed(666L)

@@ -104,7 +104,9 @@ gfiConfInt <- function(parameter, fidsamples, conf = 0.95){
   quantile.ewcdf(fcdf, c(alpha/2, 1-alpha/2))
 }
 
-#' Title
+#' Fiducial quantiles
+#' @description Quantiles of the fiducial distribution of a parameter of 
+#'   interest.
 #'
 #' @param parameter a right-sided formula defining the parameter of interest 
 #' @param fidsamples fiducial samples, the output of \code{\link{gfilinreg}} or 
