@@ -33,3 +33,8 @@ likelihood <- function(y, beta0, beta1, sigma){
   prod(dcauchy((y-X%*%c(beta0,beta1))/sigma)/sigma)
 }
 (ML <- MASS::fitdistr(dat$y, likelihood, list(beta0=0, beta1=9500, sigma=5)))
+
+################################################################################
+dat$y <- c(1:6, 1:6)
+fs <- gfilinreg(y ~ 0 + group, data = dat, L = 20L, distr = "cauchy")
+gfiSummary(fs)
