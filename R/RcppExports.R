@@ -9,11 +9,11 @@ f_cauchy <- function(centers, XIs, XmIs, yIs, ymIs, K, p, M, n) {
     .Call('_gfilinreg_f_cauchy', PACKAGE = 'gfilinreg', centers, XIs, XmIs, yIs, ymIs, K, p, M, n)
 }
 
-f_student <- function(centers, XI, XmI, yI, ymI, M, n, nu) {
-    .Call('_gfilinreg_f_student', PACKAGE = 'gfilinreg', centers, XI, XmI, yI, ymI, M, n, nu)
+f_student <- function(centers, XIs, XmIs, yIs, ymIs, K, p, M, n, nu) {
+    .Call('_gfilinreg_f_student', PACKAGE = 'gfilinreg', centers, XIs, XmIs, yIs, ymIs, K, p, M, n, nu)
 }
 
-f_logistic <- function(centers, XI, XmI, yI, ymI, M, n) {
-    .Call('_gfilinreg_f_logistic', PACKAGE = 'gfilinreg', centers, XI, XmI, yI, ymI, M, n)
+f_logistic <- function(centers, XIs, XmIs, yIs, ymIs, K, p, M, n) {
+    .Call('_gfilinreg_f_logistic', PACKAGE = 'gfilinreg', centers, XIs, XmIs, yIs, ymIs, K, p, M, n)
 }
 

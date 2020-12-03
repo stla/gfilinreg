@@ -60,13 +60,20 @@ gfilinreg <- function(
   }
   q <- p + 1L
   #
-  goodCombs <- goodCombinations(X) # !! if not too big ! if big, resort to sampling
-  nGoodCombs <- ncol(goodCombs)
-  if(Kmax >= nGoodCombs){
-    K <- nGoodCombs
-    combs <- goodCombs
+  if(choose(n, q) < 20000L){
+    goodCombs <- goodCombinations(X) 
+    nGoodCombs <- ncol(goodCombs)
+    if(Kmax >= nGoodCombs){
+      K <- nGoodCombs
+      combs <- goodCombs
+    }else{
+      combs <- goodCombs[, sample.int(nGoodCombs, Kmax)]
+      K <- Kmax
+    }
   }else{
-    combs <- goodCombs[, sample.int(nGoodCombs, Kmax)]
+    message(sprintf("Sampling %d combinations of indices...", Kmax))
+    combs <- sampleCombs(X, Kmax)
+    message("Done.")
     K <- Kmax
   }
   #
