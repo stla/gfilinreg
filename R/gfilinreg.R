@@ -201,9 +201,10 @@ gfilinreg <- function(
         M = M, n = n
       )
     }
+    stopCluster(cl)
     LOGWEIGHTS <- lapply(outputs, `[[`, "logWeights")
     THETAS <- lapply(outputs, function(output){
-      as.data.table(`colnames<-`(output, c(betas, "sigma")))
+      as.data.table(`colnames<-`(output[["Theta"]], c(betas, "sigma")))
     })
   }
   #
