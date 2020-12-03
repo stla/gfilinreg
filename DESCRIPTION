@@ -1,6 +1,6 @@
 Package: gfilinreg
 Type: Package
-Title: Generalized Fiducial Inference for Low-Dimensional Linear Regression
+Title: Generalized Fiducial Inference for Robust Low-Dimensional Linear Regression
 Version: 1.0.0
 Author: Stéphane Laurent
 Maintainer: Stéphane Laurent <laurent_step@outlook.fr>
@@ -15,7 +15,10 @@ Imports: Rcpp,
   utils, 
   spatstat, 
   EigenR,
-  data.table
+  data.table, 
+  parallel, 
+  doParallel, 
+  foreach
 Suggests: 
     heavy,
     kde1d,

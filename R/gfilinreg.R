@@ -35,6 +35,9 @@
 #' @importFrom stats model.matrix as.formula
 #' @importFrom lazyeval f_eval_lhs f_rhs
 #' @importFrom data.table CJ as.data.table rbindlist
+#' @importFrom doParallel registerDoParallel
+#' @importFrom parallel makeCluster stopCluster
+#' @importFrom foreach foreach `%dopar%`
 #' @export
 gfilinreg <- function(
   formula, data = NULL, distr = "student", df = Inf, L = 30L, Kmax = 50L,
@@ -105,6 +108,7 @@ gfilinreg <- function(
     XmI <- X[-I, , drop = FALSE]
     yI <- y[I]
     ymI <- y[-I]
+    # run
     if(distr == "normal"){
       cpp <- f_normal(
         centers = t(centers),
