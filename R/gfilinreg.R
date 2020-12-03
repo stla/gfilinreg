@@ -101,22 +101,34 @@ gfilinreg <- function(
   )
   # algorithm
   THETAS <- LOGWEIGHTS <- vector("list", K)
-  for(k in 1L:K){
-    # select indices
-    I <- combs[, k]
-    XI <- X[I, , drop = FALSE]
-    XmI <- X[-I, , drop = FALSE]
-    yI <- y[I]
-    ymI <- y[-I]
-    # run
-    if(distr == "normal"){
+  if(distr == "normal"){
+    for(k in 1L:K){
+      # select indices
+      I <- combs[, k]
+      XI <- X[I, , drop = FALSE]
+      XmI <- X[-I, , drop = FALSE]
+      yI <- y[I]
+      ymI <- y[-I]
+      # run
       cpp <- f_normal(
         centers = t(centers),
         XI = XI, XmI = XmI,
         yI = yI, ymI = ymI,
         M = M, n = n
       )
-    }else if(distr == "student"){
+      THETAS[[k]] <- 
+        as.data.table(`colnames<-`(cpp[["Theta"]], c(betas, "sigma")))
+      LOGWEIGHTS[[k]] <- cpp[["logWeights"]]
+    }
+  }else if(distr == "student"){
+    for(k in 1L:K){
+      # select indices
+      I <- combs[, k]
+      XI <- X[I, , drop = FALSE]
+      XmI <- X[-I, , drop = FALSE]
+      yI <- y[I]
+      ymI <- y[-I]
+      # run
       cpp <- f_student(
         centers = t(centers),
         XI = XI, XmI = XmI,
@@ -124,24 +136,48 @@ gfilinreg <- function(
         M = M, n = n,
         nu = df
       )
-    }else if(distr == "cauchy"){
+      THETAS[[k]] <- 
+        as.data.table(`colnames<-`(cpp[["Theta"]], c(betas, "sigma")))
+      LOGWEIGHTS[[k]] <- cpp[["logWeights"]]
+    }
+  }else if(distr == "cauchy"){
+    for(k in 1L:K){
+      # select indices
+      I <- combs[, k]
+      XI <- X[I, , drop = FALSE]
+      XmI <- X[-I, , drop = FALSE]
+      yI <- y[I]
+      ymI <- y[-I]
+      # run
       cpp <- f_cauchy(
         centers = t(centers),
         XI = XI, XmI = XmI,
         yI = yI, ymI = ymI,
         M = M, n = n
       )
-    }else if(distr == "logistic"){
+      THETAS[[k]] <- 
+        as.data.table(`colnames<-`(cpp[["Theta"]], c(betas, "sigma")))
+      LOGWEIGHTS[[k]] <- cpp[["logWeights"]]
+    }
+  }else if(distr == "logistic"){
+    for(k in 1L:K){
+      # select indices
+      I <- combs[, k]
+      XI <- X[I, , drop = FALSE]
+      XmI <- X[-I, , drop = FALSE]
+      yI <- y[I]
+      ymI <- y[-I]
+      # run
       cpp <- f_logistic(
         centers = t(centers),
         XI = XI, XmI = XmI,
         yI = yI, ymI = ymI,
         M = M, n = n
       )
+      THETAS[[k]] <- 
+        as.data.table(`colnames<-`(cpp[["Theta"]], c(betas, "sigma")))
+      LOGWEIGHTS[[k]] <- cpp[["logWeights"]]
     }
-    THETAS[[k]] <- 
-      as.data.table(`colnames<-`(cpp[["Theta"]], c(betas, "sigma")))
-    LOGWEIGHTS[[k]] <- cpp[["logWeights"]]
   }
   #
   J <- exp(do.call(c, LOGWEIGHTS))
