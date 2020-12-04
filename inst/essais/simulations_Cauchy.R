@@ -16,22 +16,17 @@ for(i in 1L:48){
     group = group,
     y = c(rcauchy(3L), 2 + rcauchy(3L))
   )
-  # # max-likelihood estimates
-  # hfit <- heavyLm(y ~ 0 + group, data = dat, family = Cauchy())
-  # MAXLHD[i, ] <- c(hfit[["coefficients"]], sqrt(hfit[["sigma2"]]))
-  # # fiducial stuff
-  # fidsamples <- gfilinreg(y ~ 0 + group, data = dat, L = 50L, distr = "cauchy")
-  # FIDlist[[i]] <- cbind(
-  #   parameter = c("group1", "group2", "sigma"), 
-  #   as.data.table(gfiSummary(fidsamples))
-  # )
-  # rm(list = "fidsamples")
+  # max-likelihood estimates
+  hfit <- heavyLm(y ~ 0 + group, data = dat, family = Cauchy())
+  MAXLHD[i, ] <- c(hfit[["coefficients"]], sqrt(hfit[["sigma2"]]))
+  # fiducial stuff
+  fidsamples <- gfilinreg(y ~ 0 + group, data = dat, L = 80L, distr = "cauchy")
+  FIDlist[[i]] <- cbind(
+    parameter = c("group1", "group2", "sigma"),
+    as.data.table(gfiSummary(fidsamples))
+  )
+  rm(list = "fidsamples")
 }
-
-fidsamples <- gfilinreg(y ~ 0 + group, data = dat, L = L, distr = "cauchy", nthreads=th)
-
-stop() 
-
 
 FID <- rbindlist(FIDlist)
 
