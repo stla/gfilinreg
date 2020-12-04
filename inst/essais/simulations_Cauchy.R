@@ -28,7 +28,7 @@ for(i in 1L:48){
   # rm(list = "fidsamples")
 }
 
-fidsamples <- gfilinreg(y ~ 0 + group, data = dat, L = 50L, distr = "cauchy")
+fidsamples <- gfilinreg(y ~ 0 + group, data = dat, L = L, distr = "cauchy", nthreads=th)
 
 stop() 
 

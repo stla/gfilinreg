@@ -80,8 +80,10 @@ Rcpp::List f_normal(const Eigen::MatrixXd& centers,
   const size_t ncenters = centers.cols();
   const size_t q = p + 1;
   Rcpp::List OUTPUTS(K);
+  std::vector<Eigen::MatrixXd> THETAS(K);
+  std::vector<Eigen::VectorXd> LOGWEIGHTS(K);
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(nthreads) shared(OUTPUTS)
+#pragma omp parallel for num_threads(nthreads) shared(THETAS,LOGWEIGHTS)
 #endif
   for(size_t k = 0; k < K; k++) {
     const Eigen::MatrixXd XI = XIs.block(0, k * p, q, p);
@@ -107,9 +109,13 @@ Rcpp::List f_normal(const Eigen::MatrixXd& centers,
         }
       }
     }
+    THETAS[k] = Theta.leftCols(counter).transpose();
+    LOGWEIGHTS[k] = J.head(counter);
+  }
+  for(size_t k = 0; k < K; k++) {
     OUTPUTS[k] = Rcpp::List::create(
-        Rcpp::Named("Theta") = Theta.leftCols(counter).transpose(),
-        Rcpp::Named("logWeights") = J.head(counter));
+      Rcpp::Named("Theta") = THETAS[k],
+      Rcpp::Named("logWeights") = LOGWEIGHTS[k]);
   }
   return OUTPUTS;
 }
@@ -128,8 +134,10 @@ Rcpp::List f_cauchy(const Eigen::MatrixXd& centers,
   const size_t ncenters = centers.cols();
   const size_t q = p + 1;
   Rcpp::List OUTPUTS(K);
+  std::vector<Eigen::MatrixXd> THETAS(K);
+  std::vector<Eigen::VectorXd> LOGWEIGHTS(K);
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(nthreads) shared(OUTPUTS)
+#pragma omp parallel for num_threads(nthreads) shared(THETAS,LOGWEIGHTS)
 #endif
   for(size_t k = 0; k < K; k++) {
     const Eigen::MatrixXd XI = XIs.block(0, k * p, q, p);
@@ -155,10 +163,14 @@ Rcpp::List f_cauchy(const Eigen::MatrixXd& centers,
         }
       }
     }
+    THETAS[k] = Theta.leftCols(counter).transpose();
+    LOGWEIGHTS[k] = J.head(counter);
+  }
+  for(size_t k = 0; k < K; k++) {
     OUTPUTS[k] = Rcpp::List::create(
-      Rcpp::Named("Theta") = Theta.leftCols(counter).transpose(),
-      Rcpp::Named("logWeights") = J.head(counter));
-}
+      Rcpp::Named("Theta") = THETAS[k],
+      Rcpp::Named("logWeights") = LOGWEIGHTS[k]);
+  }
   return OUTPUTS;
 }
 
@@ -177,8 +189,10 @@ Rcpp::List f_student(const Eigen::MatrixXd& centers,
   const size_t ncenters = centers.cols();
   const size_t q = p + 1;
   Rcpp::List OUTPUTS(K);
+  std::vector<Eigen::MatrixXd> THETAS(K);
+  std::vector<Eigen::VectorXd> LOGWEIGHTS(K);
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(nthreads) shared(OUTPUTS)
+#pragma omp parallel for num_threads(nthreads) shared(THETAS,LOGWEIGHTS)
 #endif
   for(size_t k = 0; k < K; k++) {
     const Eigen::MatrixXd XI = XIs.block(0, k * p, q, p);
@@ -204,9 +218,13 @@ Rcpp::List f_student(const Eigen::MatrixXd& centers,
         }
       }
     }
+    THETAS[k] = Theta.leftCols(counter).transpose();
+    LOGWEIGHTS[k] = J.head(counter);
+  }
+  for(size_t k = 0; k < K; k++) {
     OUTPUTS[k] = Rcpp::List::create(
-      Rcpp::Named("Theta") = Theta.leftCols(counter).transpose(),
-      Rcpp::Named("logWeights") = J.head(counter));
+      Rcpp::Named("Theta") = THETAS[k],
+      Rcpp::Named("logWeights") = LOGWEIGHTS[k]);
   }
   return OUTPUTS;
 }
@@ -225,8 +243,10 @@ Rcpp::List f_logistic(const Eigen::MatrixXd& centers,
   const size_t ncenters = centers.cols();
   const size_t q = p + 1;
   Rcpp::List OUTPUTS(K);
+  std::vector<Eigen::MatrixXd> THETAS(K);
+  std::vector<Eigen::VectorXd> LOGWEIGHTS(K);
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(nthreads) shared(OUTPUTS)
+#pragma omp parallel for num_threads(nthreads) shared(THETAS,LOGWEIGHTS)
 #endif
   for(size_t k = 0; k < K; k++) {
     const Eigen::MatrixXd XI = XIs.block(0, k * p, q, p);
@@ -252,9 +272,13 @@ Rcpp::List f_logistic(const Eigen::MatrixXd& centers,
         }
       }
     }
+    THETAS[k] = Theta.leftCols(counter).transpose();
+    LOGWEIGHTS[k] = J.head(counter);
+  }
+  for(size_t k = 0; k < K; k++) {
     OUTPUTS[k] = Rcpp::List::create(
-      Rcpp::Named("Theta") = Theta.leftCols(counter).transpose(),
-      Rcpp::Named("logWeights") = J.head(counter));
+      Rcpp::Named("Theta") = THETAS[k],
+      Rcpp::Named("logWeights") = LOGWEIGHTS[k]);
   }
   return OUTPUTS;
 }
