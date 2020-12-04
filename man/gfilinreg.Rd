@@ -31,7 +31,7 @@ gfilinreg(
 
 \item{Kmax}{maximal number of combinations of indices to use}
 
-\item{nthreads}{XXXXXXXXXXX}
+\item{nthreads}{number of threads for parallel computations}
 
 \item{stopifbig}{logical, whether to stop if the algorithm requires huge 
 matrices}

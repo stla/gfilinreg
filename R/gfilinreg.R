@@ -14,7 +14,7 @@
 #' @param L number of subdivisions of each axis of the hypercube
 #'   \code{(0,1)^(p+1)}
 #' @param Kmax maximal number of combinations of indices to use
-#' @param nthreads XXXXXXXXXXX
+#' @param nthreads number of threads for parallel computations
 #' @param stopifbig logical, whether to stop if the algorithm requires huge 
 #'   matrices
 #'
