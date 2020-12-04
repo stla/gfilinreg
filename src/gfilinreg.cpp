@@ -81,7 +81,7 @@ Rcpp::List f_normal(const Eigen::MatrixXd& centers,
   const size_t q = p + 1;
   Rcpp::List OUTPUTS(K);
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(nthreads)
+#pragma omp parallel for num_threads(nthreads) shared(OUTPUTS)
 #endif
   for(size_t k = 0; k < K; k++) {
     const Eigen::MatrixXd XI = XIs.block(0, k * p, q, p);
@@ -129,16 +129,16 @@ Rcpp::List f_cauchy(const Eigen::MatrixXd& centers,
   const size_t q = p + 1;
   Rcpp::List OUTPUTS(K);
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(nthreads)
+#pragma omp parallel for num_threads(nthreads) shared(OUTPUTS)
 #endif
   for(size_t k = 0; k < K; k++) {
     const Eigen::MatrixXd XI = XIs.block(0, k * p, q, p);
     const Eigen::MatrixXd XmI = XmIs.block(0, k * p, n - q, p);
     const Eigen::VectorXd yI = yIs.col(k);
     const Eigen::VectorXd ymI = ymIs.col(k);
-    size_t counter = 0;
     Eigen::VectorXd J(M);
     Eigen::MatrixXd Theta(q, M);
+    size_t counter = 0;
     for(size_t m = 0; m < ncenters; m++) {
       Eigen::MatrixXd H(q, q);
       H << XI, qcauchy(centers.col(m));
@@ -158,7 +158,7 @@ Rcpp::List f_cauchy(const Eigen::MatrixXd& centers,
     OUTPUTS[k] = Rcpp::List::create(
       Rcpp::Named("Theta") = Theta.leftCols(counter).transpose(),
       Rcpp::Named("logWeights") = J.head(counter));
-  }
+}
   return OUTPUTS;
 }
 
@@ -178,7 +178,7 @@ Rcpp::List f_student(const Eigen::MatrixXd& centers,
   const size_t q = p + 1;
   Rcpp::List OUTPUTS(K);
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(nthreads)
+#pragma omp parallel for num_threads(nthreads) shared(OUTPUTS)
 #endif
   for(size_t k = 0; k < K; k++) {
     const Eigen::MatrixXd XI = XIs.block(0, k * p, q, p);
@@ -226,7 +226,7 @@ Rcpp::List f_logistic(const Eigen::MatrixXd& centers,
   const size_t q = p + 1;
   Rcpp::List OUTPUTS(K);
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(nthreads)
+#pragma omp parallel for num_threads(nthreads) shared(OUTPUTS)
 #endif
   for(size_t k = 0; k < K; k++) {
     const Eigen::MatrixXd XI = XIs.block(0, k * p, q, p);

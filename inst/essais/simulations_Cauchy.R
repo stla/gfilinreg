@@ -9,23 +9,30 @@ FIDlist <- vector("list", length = nsims)
 
 group <- gl(2L, 3L)
 set.seed(666L)
-for(i in 1L:nsims){
+for(i in 1L:48){
   cat(i, " - ")
   # simulated dataset
   dat <- data.frame(
     group = group,
     y = c(rcauchy(3L), 2 + rcauchy(3L))
   )
-  # max-likelihood estimates
-  hfit <- heavyLm(y ~ 0 + group, data = dat, family = Cauchy())
-  MAXLHD[i, ] <- c(hfit[["coefficients"]], sqrt(hfit[["sigma2"]]))
-  # fiducial stuff
-  fidsamples <- gfilinreg(y ~ 0 + group, data = dat, L = 50L, distr = "cauchy")
-  FIDlist[[i]] <- cbind(
-    parameter = c("group1", "group2", "sigma"), 
-    as.data.table(gfiSummary(fidsamples))
-  )
+  # # max-likelihood estimates
+  # hfit <- heavyLm(y ~ 0 + group, data = dat, family = Cauchy())
+  # MAXLHD[i, ] <- c(hfit[["coefficients"]], sqrt(hfit[["sigma2"]]))
+  # # fiducial stuff
+  # fidsamples <- gfilinreg(y ~ 0 + group, data = dat, L = 50L, distr = "cauchy")
+  # FIDlist[[i]] <- cbind(
+  #   parameter = c("group1", "group2", "sigma"), 
+  #   as.data.table(gfiSummary(fidsamples))
+  # )
+  # rm(list = "fidsamples")
 }
+
+fidsamples <- gfilinreg(y ~ 0 + group, data = dat, L = 50L, distr = "cauchy")
+
+stop() 
+
+
 FID <- rbindlist(FIDlist)
 
 saveRDS(MAXLHD, "~/Work/R/gfilinreg/inst/essais/MAXLHD.rds")
