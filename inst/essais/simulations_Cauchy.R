@@ -32,7 +32,8 @@ saveRDS(MAXLHD, "~/Work/R/gfilinreg/inst/essais/MAXLHD.rds")
 saveRDS(FID, "~/Work/R/gfilinreg/inst/essais/FID.rds")
 saveRDS(FIDlist, "~/Work/R/gfilinreg/inst/essais/FIDlist.rds")
 
-# FID[param=="group1"] etc
+stop()
+
 
 MAXLHD <- readRDS("~/Work/R/gfilinreg/inst/essais/MAXLHD.rds")
 FID <- readRDS("~/Work/R/gfilinreg/inst/essais/FID.rds")

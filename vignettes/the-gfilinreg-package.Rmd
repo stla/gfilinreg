@@ -42,6 +42,11 @@ is the dimension of the model (the number of columns of the $X$ matrix), and
 the integer argument `L` of the `gfilinreg` function is the desired number of 
 subdivisions of each edge of the hypercube.
 
+***Note.*** 
+*I set `nthreads = 2L` because of CRAN constraints: CRAN does not allow more 
+than two parallel computations. This is also why I set `nthreads = 2L` in all 
+the examples of the package*. 
+
 A quick summary of the fiducial samples is provided by the `gfiSummary` 
 function: 
 
