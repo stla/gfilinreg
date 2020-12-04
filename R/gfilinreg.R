@@ -14,6 +14,7 @@
 #' @param L number of subdivisions of each axis of the hypercube
 #'   \code{(0,1)^(p+1)}
 #' @param Kmax maximal number of combinations of indices to use
+#' @param nthreads XXXXXXXXXXX
 #' @param stopifbig logical, whether to stop if the algorithm requires huge 
 #'   matrices
 #'
@@ -35,10 +36,11 @@
 #' @importFrom stats model.matrix as.formula
 #' @importFrom lazyeval f_eval_lhs f_rhs
 #' @importFrom data.table CJ as.data.table rbindlist
+#' @importFrom parallel detectCores
 #' @export
 gfilinreg <- function(
   formula, data = NULL, distr = "student", df = Inf, L = 30L, Kmax = 50L,
-  stopifbig = TRUE
+  nthreads = parallel::detectCores() , stopifbig = TRUE
 ){
   stopifnot(Kmax >= 2)
   distr <- match.arg(distr, c("normal", "student", "cauchy", "logistic"))
@@ -108,7 +110,8 @@ gfilinreg <- function(
       centers = t(centers),
       XIs = XIs, XmIs = XmIs,
       yIs = yIs, ymIs = ymIs,
-      K = K, p = p, M = M, n = n
+      K = K, p = p, M = M, n = n, 
+      nthreads = nthreads
     )
   }else if(distr == "student"){
     cpp <- f_student(
@@ -116,24 +119,28 @@ gfilinreg <- function(
       XIs = XIs, XmIs = XmIs,
       yIs = yIs, ymIs = ymIs,
       K = K, p = p, M = M, n = n,
-      nu = df
+      nu = df,
+      nthreads = nthreads
     )
   }else if(distr == "cauchy"){
     cpp <- f_cauchy(
       centers = t(centers),
       XIs = XIs, XmIs = XmIs,
       yIs = yIs, ymIs = ymIs,
-      K = K, p = p, M = M, n = n
+      K = K, p = p, M = M, n = n,
+      nthreads = nthreads
     )
   }else if(distr == "logistic"){
     cpp <- f_logistic(
       centers = t(centers),
       XIs = XIs, XmIs = XmIs,
       yIs = yIs, ymIs = ymIs,
-      K = K, p = p, M = M, n = n
+      K = K, p = p, M = M, n = n,
+      nthreads = nthreads
     )
   }
   #
+  
   J <- exp(cpp[["logWeights"]])
   out <- list(
     Theta = as.data.table(`colnames<-`(cpp[["Theta"]], c(betas, "sigma"))),

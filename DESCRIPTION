@@ -15,7 +15,8 @@ Imports: Rcpp,
   utils, 
   spatstat, 
   EigenR,
-  data.table
+  data.table,
+  parallel
 Suggests: 
     heavy,
     kde1d,

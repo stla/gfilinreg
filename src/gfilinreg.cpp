@@ -1,6 +1,11 @@
 #include <RcppEigen.h>
 #include <boost/math/distributions/normal.hpp>
 #include <boost/math/distributions/students_t.hpp>
+
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 using boost::math::normal;
 using boost::math::students_t;
 // [[Rcpp::depends(RcppEigen)]]
