@@ -2,6 +2,15 @@
 #' @useDynLib gfilinreg
 NULL
 
+#' @importFrom memuse Sys.meminfo mu
+#' @noRd
+enoughRAM <- function(n){
+  GB <- n * 8e-9
+  requiredRAM <- mu(GB, unit = "GiB")
+  freeRAM <- Sys.meminfo()$freeram
+  freeRAM > requiredRAM
+}
+
 #' @importFrom EigenR Eigen_rank 
 #' @importFrom utils combn
 #' @noRd

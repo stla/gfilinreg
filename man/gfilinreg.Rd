@@ -11,6 +11,7 @@ gfilinreg(
   df = Inf,
   L = 30L,
   Kmax = 50L,
+  nthreads = parallel::detectCores(),
   stopifbig = TRUE
 )
 }
@@ -29,6 +30,8 @@ gfilinreg(
 \code{(0,1)^(p+1)}}
 
 \item{Kmax}{maximal number of combinations of indices to use}
+
+\item{nthreads}{XXXXXXXXXXX}
 
 \item{stopifbig}{logical, whether to stop if the algorithm requires huge 
 matrices}

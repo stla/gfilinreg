@@ -79,6 +79,10 @@ gfilinreg <- function(
     K <- Kmax
   }
   #
+  if(!enoughRAM(q*L^q*(1+K/2))){
+    stop("Insufficient free RAM.")
+  }
+  #
   if(stopifbig && (K * q * L^q / 2 > 8e7)){
     stop(
       paste0(
