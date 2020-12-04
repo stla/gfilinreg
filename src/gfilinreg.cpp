@@ -8,6 +8,7 @@
 
 using boost::math::normal;
 using boost::math::students_t;
+
 // [[Rcpp::depends(RcppEigen)]]
 // [[Rcpp::depends(BH)]]
 
@@ -74,11 +75,14 @@ Rcpp::List f_normal(const Eigen::MatrixXd& centers,
                     const size_t K,
                     const size_t p,
                     const size_t M,
-                    const size_t n) {
+                    const size_t n,
+                    const size_t nthreads) {
   const size_t ncenters = centers.cols();
   const size_t q = p + 1;
-  Eigen::MatrixXd THETAS(q, 0);
-  Eigen::VectorXd LOGWEIGHTS(0);
+  Rcpp::List OUTPUTS(K);
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(nthreads)
+#endif
   for(size_t k = 0; k < K; k++) {
     const Eigen::MatrixXd XI = XIs.block(0, k * p, q, p);
     const Eigen::MatrixXd XmI = XmIs.block(0, k * p, n - q, p);
@@ -103,13 +107,11 @@ Rcpp::List f_normal(const Eigen::MatrixXd& centers,
         }
       }
     }
-    THETAS.conservativeResize(Eigen::NoChange, THETAS.cols() + counter);
-    THETAS.rightCols(counter) = Theta.leftCols(counter);
-    LOGWEIGHTS.conservativeResize(LOGWEIGHTS.size() + counter);
-    LOGWEIGHTS.tail(counter) = J.head(counter);
+    OUTPUTS[k] = Rcpp::List::create(
+        Rcpp::Named("Theta") = Theta.leftCols(counter).transpose(),
+        Rcpp::Named("logWeights") = J.head(counter));
   }
-  return Rcpp::List::create(Rcpp::Named("Theta") = THETAS.transpose(),
-                            Rcpp::Named("logWeights") = LOGWEIGHTS);
+  return OUTPUTS;
 }
 
 // [[Rcpp::export]]

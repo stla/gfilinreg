@@ -140,10 +140,13 @@ gfilinreg <- function(
     )
   }
   #
-  
-  J <- exp(cpp[["logWeights"]])
+  LOGWEIGHTS <- lapply(cpp, `[[`, "logWeights")
+  THETAS <- lapply(cpp, function(output){
+    as.data.table(`colnames<-`(output[["Theta"]], c(betas, "sigma")))
+  })
+  J <- exp(do.call(c, LOGWEIGHTS))
   out <- list(
-    Theta = as.data.table(`colnames<-`(cpp[["Theta"]], c(betas, "sigma"))),
+    Theta = rbindlist(THETAS),
     weight = J/sum(J)
   )
   attr(out, "distr") <- distr
