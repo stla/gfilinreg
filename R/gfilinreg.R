@@ -29,7 +29,7 @@
 #' @examples set.seed(666L)
 #' x <- c(1, 2, 3, 4)
 #' y <- x + 3 * rcauchy(4L)
-#' gfi <- gfilinreg(y ~ x, distr = "cauchy", L = 30L)
+#' gfi <- gfilinreg(y ~ x, distr = "cauchy", L = 30L, nthreads = 2L)
 #' gfiSummary(gfi)
 #'
 #' @importFrom EigenR Eigen_rank

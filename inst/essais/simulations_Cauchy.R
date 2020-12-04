@@ -7,20 +7,20 @@ MAXLHD <- matrix(NA_real_, nrow = nsims, ncol = 3L)
 colnames(MAXLHD) <- c("group1", "group2", "sigma")
 FIDlist <- vector("list", length = nsims)
 
-group <- gl(2L, 6L)
+group <- gl(2L, 3L)
 set.seed(666L)
 for(i in 1L:nsims){
   cat(i, " - ")
   # simulated dataset
   dat <- data.frame(
     group = group,
-    y = c(rcauchy(6L), 2 + rcauchy(6L))
+    y = c(rcauchy(3L), 2 + rcauchy(3L))
   )
   # max-likelihood estimates
   hfit <- heavyLm(y ~ 0 + group, data = dat, family = Cauchy())
   MAXLHD[i, ] <- c(hfit[["coefficients"]], sqrt(hfit[["sigma2"]]))
   # fiducial stuff
-  fidsamples <- gfilinreg(y ~ 0 + group, data = dat, L = 100L, distr = "cauchy")
+  fidsamples <- gfilinreg(y ~ 0 + group, data = dat, L = 50L, distr = "cauchy")
   FIDlist[[i]] <- cbind(
     parameter = c("group1", "group2", "sigma"), 
     as.data.table(gfiSummary(fidsamples))

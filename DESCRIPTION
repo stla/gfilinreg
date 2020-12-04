@@ -1,10 +1,10 @@
 Package: gfilinreg
 Type: Package
-Title: Generalized Fiducial Inference for Low-Dimensional Linear Regression
+Title: Generalized Fiducial Inference for Low-Dimensional Robust Linear Regression
 Version: 1.0.0
 Author: Stéphane Laurent
 Maintainer: Stéphane Laurent <laurent_step@outlook.fr>
-Description: Fiducial framework for linear regression models allowing normal, Student, Cauchy, or logistic error terms. Only low-dimensional models are possible, such as the simple linear regression model, the quadratic regression model, or the one-way ANOVA model with two or three factor levels. Reference: Hannig, Lai & Lee (2014) <doi:10.1016/j.csda.2013.03.003>.
+Description: Fiducial framework for linear regression models allowing normal, Student, Cauchy, or logistic error terms. Only low-dimensional models are possible, such as the simple linear regression model, or the one-way ANOVA model with two factor levels. Reference: Hannig, Lai & Lee (2014) <doi:10.1016/j.csda.2013.03.003>.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
