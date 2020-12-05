@@ -34,7 +34,7 @@ x <- rgamma(6L, shape = 10, rate = 1)
 y <- rnorm(6L, mean = x, sd = 2)
 dat <- data.frame(x = x, y = y)
 fidsamples <- 
-  gfilinreg(y ~ x, data = dat, distr = "normal", L = 50L, nthreads = 2L)
+  gfilinreg(y ~ x, data = dat, distr = "normal", L = 100L, nthreads = 2L)
 ```
 
 The algorithm involves a partition of the hypercube ${(0,1)}^{p+1}$, where $p$ 
@@ -83,7 +83,7 @@ frequentist results.
 
 Now we perform some simulations of a "t-test model" with Cauchy errors, we 
 store the fiducial summaries for each simulated dataset and we also store the 
-maximum likelihood estimates thanks to the 'heavy' package. We simulate $500$ 
+maximum likelihood estimates thanks to the 'heavy' package. We simulate $1000$ 
 datasets.
 
 ```{r simulations, eval=FALSE}
@@ -91,7 +91,7 @@ library(gfilinreg)
 library(heavy)
 library(data.table)
 
-nsims <- 500L
+nsims <- 1000L
 MAXLHD <- matrix(NA_real_, nrow = nsims, ncol = 3L)
 colnames(MAXLHD) <- c("group1", "group2", "sigma")
 FIDlist <- vector("list", length = nsims)
@@ -109,7 +109,7 @@ for(i in 1L:nsims){
   hfit <- heavyLm(y ~ 0 + group, data = dat, family = Cauchy())
   MAXLHD[i, ] <- c(hfit[["coefficients"]], sqrt(hfit[["sigma2"]]))
   # fiducial stuff
-  fidsamples <- gfilinreg(y ~ 0 + group, data = dat, L = 80L, distr = "cauchy")
+  fidsamples <- gfilinreg(y ~ 0 + group, data = dat, L = 100L, distr = "cauchy")
   FIDlist[[i]] <- cbind(
     parameter = c("group1", "group2", "sigma"), 
     as.data.table(gfiSummary(fidsamples))
@@ -144,8 +144,8 @@ kfit_fid_mean   <- kde1d(group1_fid_mean, mult = 4)
 kfit_fid_median <- kde1d(group1_fid_median, mult = 4)
 
 curve(
-  dkde1d(x, kfit_maxlhd), from = -4, to = 4, axes = FALSE,
-  lwd = 2, col = "red", lty = "dashed", xlab = "beta1", ylab = NA
+  dkde1d(x, kfit_maxlhd), from = -6, to = 6, axes = FALSE,
+  lwd = 3, col = "red", xlab = "beta1", ylab = NA
 )
 axis(1)
 curve(
@@ -158,23 +158,21 @@ curve(
 )
 ```
 
-A simulated dataset has yielded aberrant values of the fiducial mean and the 
-fiducial medians (I do not know why, perhaps a matrix at the edge of 
-non-invertibility has been inversed). After removing it, one observes that the
-distributions of the three estimates of the `group2` parameter are similar:
+The distributions of the three estimates of the `group2` parameter are similar 
+as well:
 
 ```{r estimate_group2}
 group2_maxlhd     <- MAXLHD[, "group2"]
-group2_fid_mean   <- FID[parameter == "group2"][["mean"]][-333L]
-group2_fid_median <- FID[parameter == "group2"][["median"]][-333L]
+group2_fid_mean   <- FID[parameter == "group2"][["mean"]]
+group2_fid_median <- FID[parameter == "group2"][["median"]]
 
 kfit_maxlhd     <- kde1d(group2_maxlhd, mult = 4)
 kfit_fid_mean   <- kde1d(group2_fid_mean, mult = 4)
 kfit_fid_median <- kde1d(group2_fid_median, mult = 4)
 
 curve(
-  dkde1d(x, kfit_maxlhd), from = -2, to = 8, axes = FALSE,
-  lwd = 2, col = "red", lty = "dashed", xlab = "beta2", ylab = NA
+  dkde1d(x, kfit_maxlhd), from = -4, to = 8, axes = FALSE,
+  lwd = 3, col = "red", xlab = "beta2", ylab = NA
 )
 axis(1)
 curve(
@@ -193,8 +191,8 @@ close to the median of the fiducial medians:
 
 ```{r estimate_sigma}
 sigma_maxlhd     <- MAXLHD[, "sigma"]
-sigma_fid_mean   <- FID[parameter == "sigma"][["mean"]][-333L]
-sigma_fid_median <- FID[parameter == "sigma"][["median"]][-333L]
+sigma_fid_mean   <- FID[parameter == "sigma"][["mean"]]
+sigma_fid_median <- FID[parameter == "sigma"][["median"]]
 
 kfit_maxlhd     <- kde1d(sigma_maxlhd, xmin = 0, mult = 4)
 kfit_fid_mean   <- kde1d(sigma_fid_mean, xmin = 0, mult = 4)
@@ -206,6 +204,7 @@ curve(
 )
 axis(1)
 abline(v = median(sigma_maxlhd), col = "red", lwd = 2, lty = "dashed")
+abline(v = 1, col = "yellow", lwd = 3) # true value
 curve(
   dkde1d(x, kfit_fid_mean), add = TRUE, 
   lwd = 2, col = "green"
@@ -216,8 +215,6 @@ curve(
   lwd = 2, col = "blue"
 )
 abline(v = median(sigma_fid_median), col = "blue", lwd = 2, lty = "dashed")
-# true value:
-abline(v = 1, col = "yellow", lwd = 3)
 ```
 
 ### Frequentist coverage
