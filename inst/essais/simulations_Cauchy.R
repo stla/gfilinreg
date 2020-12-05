@@ -2,14 +2,14 @@ library(gfilinreg)
 library(heavy)
 library(data.table)
 
-nsims <- 500L
+nsims <- 1000L
 MAXLHD <- matrix(NA_real_, nrow = nsims, ncol = 3L)
 colnames(MAXLHD) <- c("group1", "group2", "sigma")
 FIDlist <- vector("list", length = nsims)
 
 group <- gl(2L, 3L)
 set.seed(666L)
-for(i in 1L:48){
+for(i in 1L:nsims){
   cat(i, " - ")
   # simulated dataset
   dat <- data.frame(
@@ -20,7 +20,7 @@ for(i in 1L:48){
   hfit <- heavyLm(y ~ 0 + group, data = dat, family = Cauchy())
   MAXLHD[i, ] <- c(hfit[["coefficients"]], sqrt(hfit[["sigma2"]]))
   # fiducial stuff
-  fidsamples <- gfilinreg(y ~ 0 + group, data = dat, L = 80L, distr = "cauchy")
+  fidsamples <- gfilinreg(y ~ 0 + group, data = dat, L = 100L, distr = "cauchy")
   FIDlist[[i]] <- cbind(
     parameter = c("group1", "group2", "sigma"),
     as.data.table(gfiSummary(fidsamples))

@@ -1,5 +1,14 @@
 library(gfilinreg)
 
+dat <- data.frame(
+  group = gl(2, 3),
+  y = c(rnorm(3), 2 + rnorm(3))
+)
+system.time(
+  gfi <- gfilinreg(y ~ 0 + group, data = dat, L = 80L, distr = "cauchy")
+)
+
+################################################################################
 set.seed(666)
 dat <- data.frame(
   group = gl(2, 20),
