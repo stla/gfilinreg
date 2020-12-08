@@ -24,7 +24,7 @@ Simulations of the fiducial predictive distribution.
 set.seed(666L)
 x <- c(1, 2, 3, 4)
 y <- x + 3 * rcauchy(4L)
-gf <- gfilinreg(y ~ x, distr = "cauchy", L = 30L)
+gf <- gfilinreg(y ~ x, distr = "cauchy", L = 30L, nthreads = 2L)
 gfpred <- gfilinregPredictive(gf, data.frame(x = c(4, 5)))
 gfiSummary(gfpred)
 }

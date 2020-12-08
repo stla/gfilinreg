@@ -40,10 +40,16 @@
 #' @export
 gfilinreg <- function(
   formula, data = NULL, distr = "student", df = Inf, L = 30L, Kmax = 50L,
-  nthreads = parallel::detectCores() , stopifbig = TRUE
+  nthreads = parallel::detectCores(), stopifbig = TRUE
 ){
+  if(inSolaris()){
+    nthreads <- 1L
+  }
   stopifnot(Kmax >= 2)
-  distr <- match.arg(distr, c("normal", "student", "cauchy", "logistic"))
+  distr <- tolower(distr)
+  distr <- match.arg(
+    distr, c("normal", "gaussian", "student", "cauchy", "logistic")
+  )
   if(distr == "student"){
     if(df == Inf){
       distr <- "normal"
@@ -109,7 +115,7 @@ gfilinreg <- function(
     do.call(cbind, lapply(1L:K, function(k) X[-combs[, k], , drop = FALSE]))
   yIs <- apply(combs, 2L, function(I) y[I])
   ymIs <- rbind(apply(combs, 2L, function(I) y[-I]))
-  if(distr == "normal"){
+  if(distr %in% c("normal", "gaussian")){
     cpp <- f_normal(
       centers = t(centers),
       XIs = XIs, XmIs = XmIs,

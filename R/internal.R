@@ -2,6 +2,10 @@
 #' @useDynLib gfilinreg
 NULL
 
+inSolaris <- function(){
+  grepl("sunos", tolower(Sys.info()["sysname"]))
+}
+
 #' @importFrom memuse Sys.meminfo mu
 #' @noRd
 enoughRAM <- function(n){

@@ -26,6 +26,8 @@ dat <- data.frame(
   group = gl(2, 15), 
   y = c(2*rlogis(15L), 10 + 2*rlogis(15L))
 )
-gfi <- gfilinreg(y ~ 0 + group, distr = "logistic", data = dat, L = 30L)
+gfi <- gfilinreg(
+  y ~ 0 + group, distr = "logistic", data = dat, L = 30L, nthreads = 2L
+)
 gfiConfInt(~ group1 - group2, gfi)
 }
