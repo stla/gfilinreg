@@ -26,7 +26,7 @@ dat <- data.frame(
   y = c(2*rlogis(5L), 10 + 2*rlogis(5L))
 )
 gfi <- gfilinreg(
-  y ~ 0 + group, distr = "logistic", data = dat, L = 30L, nthreads = 2L
+  y ~ 0 + group, distr = "logistic", data = dat, L = 25L, nthreads = 2L
 )
 fcdf <- gfiCDF(~ group1 - group2, gfi)
 fcdf(0)
