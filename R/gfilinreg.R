@@ -80,7 +80,7 @@ gfilinreg <- function(
     }
   }else{
     message(sprintf("Sampling %d combinations of indices...", Kmax))
-    combs <- sampleCombs(X, Kmax)
+    combs <- sampleCombinations(X, Kmax)
     message("Done.")
     K <- Kmax
   }

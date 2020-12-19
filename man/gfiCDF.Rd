@@ -22,8 +22,8 @@ Fiducial cumulative distribution function of a parameter of
 \examples{
 set.seed(666L)
 dat <- data.frame(
-  group = gl(2, 15), 
-  y = c(2*rlogis(15L), 10 + 2*rlogis(15L))
+  group = gl(2, 10), 
+  y = c(2*rlogis(10L), 10 + 2*rlogis(10L))
 )
 gfi <- gfilinreg(
   y ~ 0 + group, distr = "logistic", data = dat, L = 30L, nthreads = 2L
