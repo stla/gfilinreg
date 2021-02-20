@@ -61,7 +61,8 @@ gfiSummary <- function(fidsamples, conf = 0.95){
 #' @return The fiducial cumulative distribution function of the parameter.
 #'
 #' @importFrom lazyeval f_eval_rhs
-#' @importFrom spatstat ewcdf
+#' @import spatstat
+#' @importFrom spatstat.geom ewcdf
 #' @export
 #'
 #' @examples set.seed(666L)
@@ -92,7 +93,8 @@ gfiCDF <- function(parameter, fidsamples){
 #'
 #' @return The fiducial confidence interval of the parameter.
 #'
-#' @importFrom spatstat quantile.ewcdf
+#' @import spatstat
+#' @importFrom spatstat.geom quantile.ewcdf
 #' @export
 #'
 #' @examples set.seed(666L)
@@ -121,7 +123,8 @@ gfiConfInt <- function(parameter, fidsamples, conf = 0.95){
 #'
 #' @return Numeric vector of quantiles, of the same length as \code{probs}.
 #'
-#' @importFrom spatstat quantile.ewcdf
+#' @import spatstat
+#' @importFrom spatstat.geom quantile.ewcdf
 #' @export
 #'
 #' @examples set.seed(666L)
